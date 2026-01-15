@@ -1,715 +1,619 @@
 /**
- * data.js
- * All content lives here so it’s easy to edit.
- * In the next steps we will fill:
- * - 5 home articles (title, image, body)
- * - 30 recipes (nutrition, time, diet, ingredients, steps, image)
+ * data.js — Fast & Health
+ * Keep this file as pure data (no DOM work).
+ *
+ * Image paths (GitHub Pages friendly): no leading slash.
+ * - Hero: assets/hero/hero.jpg
+ * - Articles: assets/articles/article-1.jpg ... article-5.jpg
+ * - Recipes: assets/recipes/recipe-1.jpg ... recipe-30.jpg
  */
 
-// Days are fixed (Europe audience; English labels)
 const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
-// Home articles (5 total)
 const HOME_ARTICLES = [
   {
     id: "a1",
     title: "Breakfast: small habit, big payoff",
     image: "assets/articles/article-1.jpg",
     body:
-`If mornings feel rushed, breakfast often becomes the first thing to disappear. The problem is that skipping breakfast can leave you hungrier later, more likely to grab sugary snacks, and less steady in energy and focus.
+`Breakfast is like a gentle “start” button for your day. When you eat something balanced in the morning, you’re more likely to have steady energy and make better food choices later.
 
-The good news: a “healthy breakfast” doesn’t need to be fancy. A few reliable ingredients (like yogurt, oats, eggs, fruit, whole-grain bread, nuts) can cover most mornings.
+The goal isn’t a perfect breakfast — it’s a repeatable one. If you have 2–3 go-to options you enjoy, mornings get much easier.
 
-Fast & Health makes it easy:
-• Pick a quick recipe (≤ 20 minutes)
-• Plan your week in seconds
-• Get a shopping list so you’re never guessing
-
-If you only change one thing, start here: choose 2–3 breakfasts you truly like and repeat them. Consistency beats perfection.`
+• Pick a base (yogurt, oats, eggs, toast)
+• Add color (fruit or veg)
+• Add protein (yogurt, eggs, tuna, chicken)
+• Add crunch (nuts, seeds, whole-grain)`,
   },
   {
     id: "a2",
     title: "The simplest formula: protein + fiber",
     image: "assets/articles/article-2.jpg",
     body:
-`If you want a breakfast that keeps you full, aim for two building blocks: protein and fiber.
+`If you only remember one thing: combine protein and fiber. This combo helps you feel satisfied and supports more stable energy.
 
-Protein helps you feel satisfied and supports muscle maintenance. Fiber slows digestion and keeps energy steadier. Together, they reduce the “snack crash” that happens after sweet pastries or sugary cereal.
+Protein examples: Greek yogurt, skyr, eggs, cottage cheese, tuna, chicken.
+Fiber examples: oats, whole-grain bread, berries, apples, chia, nuts.
 
-Easy protein options:
-• Greek yogurt or skyr
-• Eggs
-• Cottage cheese
-• Beans (yes — even at breakfast)
-• Smoked salmon
-
-Easy fiber options:
-• Oats or whole-grain bread
-• Berries, apples, pears
-• Chia/flax seeds
-• Nuts
-• Vegetables (tomatoes, spinach, peppers)
-
-A quick example:
-Yogurt + berries + nuts = protein + fiber + healthy fats in 2 minutes.`
+Try building “mix-and-match” breakfasts:
+• Yogurt + berries + nuts
+• Oats + fruit + seeds
+• Eggs + toast + tomatoes
+• Wrap + protein + veg`,
   },
   {
     id: "a3",
     title: "Build a balanced plate in 60 seconds",
     image: "assets/articles/article-3.jpg",
     body:
-`When you don’t want to think, use a simple “balanced plate” checklist:
+`A balanced breakfast doesn’t need a long recipe. Think of it like a small plate with 3 parts:
 
-1) A protein base
-2) A colorful fruit or vegetable
-3) A slow-carb (optional, depending on hunger)
-4) A healthy fat (small amount)
+1) Protein (eggs, yogurt, cottage cheese, fish)
+2) Fiber (oats, fruit, veg, whole-grain bread)
+3) Healthy fats (nuts, seeds, avocado, olive oil)
 
-Examples:
-• Eggs + tomatoes + whole-grain toast + olive oil
-• Oats + milk/yogurt + banana + peanut butter
-• Cottage cheese + cucumber + rye bread + seeds
+When you hit these 3, you usually feel full longer — and you avoid that “hungry again in 1 hour” feeling.
 
-Why this helps:
-Balanced meals tend to feel more satisfying and support steadier energy. And if you’re short on time, you can pick one item from each category and you’re done.
-
-Fast tip:
-Keep one “emergency breakfast” at home (oats + milk + fruit, or yogurt + granola + berries).`
+• Keep staples ready (eggs, yogurt, oats, bread)
+• Add quick toppings (tomatoes, berries, nuts, honey)`,
   },
   {
     id: "a4",
     title: "Planning beats willpower (especially on busy weeks)",
     image: "assets/articles/article-4.jpg",
     body:
-`Most unhealthy breakfasts aren’t a “knowledge” problem — they’re a planning problem.
+`Most “bad breakfast” days happen because you’re rushed and unprepared, not because you don’t care about health.
 
-When ingredients aren’t ready, the quickest option usually wins (and it’s often not the healthiest). A tiny weekly plan removes that friction.
+A tiny plan makes mornings smoother:
+• Choose 5–7 breakfasts for the week
+• Buy ingredients once
+• Prep 1–2 things ahead (overnight oats, boiled eggs, chopped fruit)
 
-Try this:
-• Choose 5 breakfasts for Monday–Friday
-• Repeat 1–2 favorites to keep shopping simple
-• Add 1 flexible day (leftovers, fruit + yogurt, or toast + eggs)
-
-Prep ideas that take under 10 minutes:
-• Wash fruit once for 3–4 days
-• Pre-portion oats, nuts, and seeds in small containers
-• Boil eggs for 2–3 mornings
-• Chop a few vegetables you like
-
-This website is built around that reality: plan first, then let the shopping list do the work.`
+When breakfast is easy, you’re more consistent — and consistency matters more than perfection.`,
   },
   {
     id: "a5",
-    title: "Avoid the ‘healthy’ sugar traps",
+    title: "Smart sweet breakfasts (without the sugar crash)",
     image: "assets/articles/article-5.jpg",
     body:
-`Some breakfasts look healthy but act like dessert — they spike hunger quickly and make it harder to stay consistent.
+`Sweet breakfasts can be healthy — the trick is to keep them balanced.
 
-Common traps:
-• Sweet pastries (even “small” ones)
-• Flavored yogurts with lots of added sugar
-• Juice instead of whole fruit
-• Granola-heavy bowls with little protein
+Instead of a sugary pastry alone, pair sweetness with protein and fiber:
+• Yogurt + fruit + a little honey
+• Oats + banana + nuts
+• Chia pudding + berries
 
-You don’t need to ban anything. Just “upgrade” it:
-• Choose plain yogurt, add fruit + a little honey if needed
-• Mix granola with nuts/seeds and keep it to a small handful
-• Swap juice for whole fruit (or blend smoothies with protein)
-• Pair bread with protein (eggs, cottage cheese, tuna, or nut butter)
-
-If you’re craving sweet:
-Keep the sweetness, but anchor it with protein and fiber. That’s the difference.`
-  }
+A small “sweet touch” (honey, cocoa, cinnamon) can make healthy breakfasts feel like a treat — without the crash.`,
+  },
 ];
 
-
+/**
+ * Recipe shape used by app.js:
+ * {
+ *  id, title, diet, meatType, caloriesPerPortion, minutes, image,
+ *  ingredients: string[],
+ *  steps: string[],
+ *  shopping: { section, name, unit, qty }[]   // qty is per portion
+ * }
+ *
+ * Units are grocery-friendly (pieces, slices, cup, tbsp, handful, pinch).
+ */
 const RECIPES = [
-  // 1
   {
     id: "r1",
     title: "Greek Yogurt Berry Bowl",
     diet: "vegetarian",
-    meatType: null,
+    meatType: "",
     caloriesPerPortion: 320,
     minutes: 5,
     image: "assets/recipes/recipe-1.jpg",
-    ingredients: ["1 cup Greek yogurt", "1 handful mixed berries", "1 tbsp nuts or seeds", "1 tsp honey (optional)"],
-    steps: ["Add yogurt to a bowl.", "Top with berries and nuts/seeds.", "Add honey if you like and enjoy."],
+    ingredients: ["Greek yogurt", "Mixed berries", "Granola", "Honey (optional)"],
+    steps: ["Add yogurt to a bowl.", "Top with berries and granola.", "Add a small honey drizzle if you like."],
     shopping: [
-      { section: "Dairy", name: "Greek yogurt", qty: 1, unit: "cup" },
-      { section: "Fruits", name: "Mixed berries", qty: 1, unit: "handful" },
-      { section: "Pantry", name: "Nuts or seeds", qty: 1, unit: "tbsp" },
-      { section: "Pantry", name: "Honey", qty: 1, unit: "tsp" }
+      { section: "Dairy", name: "Greek yogurt", unit: "cup", qty: 1 },
+      { section: "Fruits", name: "Mixed berries", unit: "handful", qty: 1 },
+      { section: "Pantry", name: "Granola", unit: "handful", qty: 1 },
+      { section: "Pantry", name: "Honey", unit: "tbsp", qty: 1 }
     ]
   },
-
-  // 2
   {
     id: "r2",
     title: "Overnight Oats (Apple-Cinnamon)",
     diet: "vegetarian",
-    meatType: null,
+    meatType: "",
     caloriesPerPortion: 380,
     minutes: 5,
     image: "assets/recipes/recipe-2.jpg",
-    ingredients: ["1/2 cup oats", "1/2 cup milk", "1/2 apple (diced)", "1 tsp cinnamon", "1 tbsp yogurt (optional)"],
-    steps: ["Mix oats and milk in a jar.", "Add apple and cinnamon.", "Chill overnight. Stir and eat in the morning."],
+    ingredients: ["Oats", "Milk (or yogurt)", "Apple", "Cinnamon", "Nuts (optional)"],
+    steps: ["Mix oats and milk in a jar.", "Stir in cinnamon.", "Top with diced apple and nuts.", "Chill overnight."],
     shopping: [
-      { section: "Grains", name: "Oats", qty: 0.5, unit: "cup" },
-      { section: "Dairy", name: "Milk", qty: 0.5, unit: "cup" },
-      { section: "Fruits", name: "Apple", qty: 0.5, unit: "piece" },
-      { section: "Spices/Condiments", name: "Cinnamon", qty: 1, unit: "tsp" },
-      { section: "Dairy", name: "Yogurt", qty: 1, unit: "tbsp" }
+      { section: "Grains", name: "Oats", unit: "cup", qty: 1 / 2 },
+      { section: "Dairy", name: "Milk", unit: "cup", qty: 1 },
+      { section: "Fruits", name: "Apple", unit: "piece", qty: 1 },
+      { section: "Spices/Condiments", name: "Cinnamon", unit: "pinch", qty: 1 },
+      { section: "Pantry", name: "Nuts", unit: "tbsp", qty: 2 }
     ]
   },
-
-  // 3
   {
     id: "r3",
     title: "Avocado Tomato Toast",
     diet: "vegetarian",
-    meatType: null,
+    meatType: "",
     caloriesPerPortion: 360,
     minutes: 8,
     image: "assets/recipes/recipe-3.jpg",
-    ingredients: ["1–2 slices whole-grain bread", "1/2 avocado", "A few cherry tomatoes", "Salt & pepper", "Lemon (optional)"],
-    steps: ["Toast bread.", "Mash avocado with salt/pepper.", "Top toast with avocado and tomatoes. Add lemon if you like."],
+    ingredients: ["Whole-grain bread", "Avocado", "Cherry tomatoes", "Salt & pepper", "Lemon (optional)"],
+    steps: ["Toast the bread.", "Mash avocado and spread on toast.", "Top with sliced tomatoes.", "Season and add lemon if desired."],
     shopping: [
-      { section: "Bakery", name: "Whole-grain bread", qty: 2, unit: "slices" },
-      { section: "Fruits", name: "Avocado", qty: 0.5, unit: "piece" },
-      { section: "Vegetables", name: "Cherry tomatoes", qty: 1, unit: "handful" },
-      { section: "Spices/Condiments", name: "Salt & pepper", qty: 1, unit: "pinch" },
-      { section: "Fruits", name: "Lemon", qty: 0.25, unit: "piece" }
+      { section: "Bakery", name: "Whole-grain bread", unit: "slice", qty: 2 },
+      { section: "Fruits", name: "Avocado", unit: "piece", qty: 1 },
+      { section: "Vegetables", name: "Cherry tomatoes", unit: "handful", qty: 1 },
+      { section: "Spices/Condiments", name: "Salt & pepper", unit: "pinch", qty: 1 }
     ]
   },
-
-  // 4
   {
     id: "r4",
     title: "Banana Peanut Butter Oat Bowl",
     diet: "vegetarian",
-    meatType: null,
+    meatType: "",
     caloriesPerPortion: 420,
     minutes: 10,
     image: "assets/recipes/recipe-4.jpg",
-    ingredients: ["1/2 cup oats", "1 cup milk or water", "1 banana", "1 tbsp peanut butter", "Cinnamon (optional)"],
-    steps: ["Cook oats with milk/water.", "Slice banana on top.", "Swirl in peanut butter. Add cinnamon if desired."],
+    ingredients: ["Oats", "Milk", "Banana", "Peanut butter", "Nuts (optional)"],
+    steps: ["Cook oats with milk until creamy.", "Top with sliced banana.", "Add peanut butter and a few nuts."],
     shopping: [
-      { section: "Grains", name: "Oats", qty: 0.5, unit: "cup" },
-      { section: "Dairy", name: "Milk", qty: 1, unit: "cup" },
-      { section: "Fruits", name: "Banana", qty: 1, unit: "piece" },
-      { section: "Pantry", name: "Peanut butter", qty: 1, unit: "tbsp" },
-      { section: "Spices/Condiments", name: "Cinnamon", qty: 1, unit: "pinch" }
+      { section: "Grains", name: "Oats", unit: "cup", qty: 1 / 2 },
+      { section: "Dairy", name: "Milk", unit: "cup", qty: 1 },
+      { section: "Fruits", name: "Banana", unit: "piece", qty: 1 },
+      { section: "Pantry", name: "Peanut butter", unit: "tbsp", qty: 1 },
+      { section: "Pantry", name: "Nuts", unit: "tbsp", qty: 2 }
     ]
   },
-
-  // 5
   {
     id: "r5",
     title: "Cottage Cheese Fruit Cup",
     diet: "vegetarian",
-    meatType: null,
+    meatType: "",
     caloriesPerPortion: 300,
     minutes: 5,
     image: "assets/recipes/recipe-5.jpg",
-    ingredients: ["1 cup cottage cheese", "1 handful fruit (berries or peach)", "1 tbsp seeds (optional)"],
-    steps: ["Add cottage cheese to a bowl.", "Top with fruit.", "Sprinkle seeds if you like."],
+    ingredients: ["Cottage cheese", "Fruit (berries or apple)", "Nuts (optional)"],
+    steps: ["Spoon cottage cheese into a bowl.", "Add fruit on top.", "Finish with a few nuts if you like."],
     shopping: [
-      { section: "Dairy", name: "Cottage cheese", qty: 1, unit: "cup" },
-      { section: "Fruits", name: "Fresh fruit", qty: 1, unit: "handful" },
-      { section: "Pantry", name: "Seeds", qty: 1, unit: "tbsp" }
+      { section: "Dairy", name: "Cottage cheese", unit: "cup", qty: 1 },
+      { section: "Fruits", name: "Fruit", unit: "handful", qty: 1 },
+      { section: "Pantry", name: "Nuts", unit: "tbsp", qty: 1 }
     ]
   },
-
-  // 6
   {
     id: "r6",
     title: "Spinach & Cheese Omelette",
     diet: "vegetarian",
-    meatType: null,
-    caloriesPerPortion: 410,
+    meatType: "",
+    caloriesPerPortion: 360,
     minutes: 12,
     image: "assets/recipes/recipe-6.jpg",
-    ingredients: ["2 eggs", "1 handful spinach", "1 small handful grated cheese", "Salt & pepper"],
-    steps: ["Beat eggs with salt/pepper.", "Cook spinach briefly.", "Add eggs, cook, add cheese, fold and serve."],
+    ingredients: ["Eggs", "Spinach", "Cheese", "Olive oil", "Salt & pepper"],
+    steps: ["Beat eggs and season.", "Sauté spinach briefly.", "Pour eggs into pan, add spinach and cheese.", "Fold and cook until set."],
     shopping: [
-      { section: "Dairy", name: "Eggs", qty: 2, unit: "pieces" },
-      { section: "Vegetables", name: "Spinach", qty: 1, unit: "handful" },
-      { section: "Dairy", name: "Cheese", qty: 1, unit: "handful" },
-      { section: "Spices/Condiments", name: "Salt & pepper", qty: 1, unit: "pinch" }
+      { section: "Dairy", name: "Eggs", unit: "piece", qty: 2 },
+      { section: "Vegetables", name: "Spinach", unit: "handful", qty: 1 },
+      { section: "Dairy", name: "Cheese", unit: "handful", qty: 1 },
+      { section: "Pantry", name: "Olive oil", unit: "tbsp", qty: 1 }
     ]
   },
-
-  // 7
   {
     id: "r7",
     title: "Tomato Basil Scrambled Eggs",
     diet: "vegetarian",
-    meatType: null,
-    caloriesPerPortion: 360,
+    meatType: "",
+    caloriesPerPortion: 320,
     minutes: 10,
     image: "assets/recipes/recipe-7.jpg",
-    ingredients: ["2 eggs", "1 tomato (chopped)", "Fresh basil (optional)", "1 tsp olive oil", "Salt & pepper"],
-    steps: ["Warm oil in pan.", "Soften tomato briefly.", "Add eggs and scramble. Finish with basil."],
+    ingredients: ["Eggs", "Cherry tomatoes", "Fresh basil", "Butter (or oil)", "Salt & pepper"],
+    steps: ["Whisk eggs with salt and pepper.", "Sauté tomatoes briefly.", "Scramble eggs gently.", "Finish with basil."],
     shopping: [
-      { section: "Dairy", name: "Eggs", qty: 2, unit: "pieces" },
-      { section: "Vegetables", name: "Tomato", qty: 1, unit: "piece" },
-      { section: "Spices/Condiments", name: "Basil", qty: 1, unit: "handful" },
-      { section: "Pantry", name: "Olive oil", qty: 1, unit: "tsp" },
-      { section: "Spices/Condiments", name: "Salt & pepper", qty: 1, unit: "pinch" }
+      { section: "Dairy", name: "Eggs", unit: "piece", qty: 2 },
+      { section: "Vegetables", name: "Cherry tomatoes", unit: "handful", qty: 1 },
+      { section: "Spices/Condiments", name: "Fresh basil", unit: "handful", qty: 1 },
+      { section: "Dairy", name: "Butter", unit: "tbsp", qty: 1 }
     ]
   },
-
-  // 8
   {
     id: "r8",
     title: "Chia Pudding (Berry)",
     diet: "vegetarian",
-    meatType: null,
-    caloriesPerPortion: 340,
+    meatType: "",
+    caloriesPerPortion: 330,
     minutes: 5,
     image: "assets/recipes/recipe-8.jpg",
-    ingredients: ["3 tbsp chia seeds", "1 cup milk", "1 tsp honey", "1 handful berries"],
-    steps: ["Mix chia, milk, honey.", "Chill 2+ hours or overnight.", "Top with berries and serve."],
+    ingredients: ["Chia seeds", "Milk", "Berries", "Honey (optional)"],
+    steps: ["Mix chia seeds with milk.", "Chill at least 2 hours (or overnight).", "Top with berries and honey."],
     shopping: [
-      { section: "Pantry", name: "Chia seeds", qty: 3, unit: "tbsp" },
-      { section: "Dairy", name: "Milk", qty: 1, unit: "cup" },
-      { section: "Pantry", name: "Honey", qty: 1, unit: "tsp" },
-      { section: "Fruits", name: "Berries", qty: 1, unit: "handful" }
+      { section: "Pantry", name: "Chia seeds", unit: "tbsp", qty: 2 },
+      { section: "Dairy", name: "Milk", unit: "cup", qty: 1 },
+      { section: "Fruits", name: "Berries", unit: "handful", qty: 1 },
+      { section: "Pantry", name: "Honey", unit: "tbsp", qty: 1 }
     ]
   },
-
-  // 9
   {
     id: "r9",
     title: "Warm Porridge with Pear & Nuts",
     diet: "vegetarian",
-    meatType: null,
+    meatType: "",
     caloriesPerPortion: 400,
     minutes: 12,
     image: "assets/recipes/recipe-9.jpg",
-    ingredients: ["1/2 cup oats", "1 cup milk or water", "1/2 pear (sliced)", "1 tbsp nuts", "Cinnamon"],
-    steps: ["Cook oats with milk/water.", "Top with pear and nuts.", "Dust with cinnamon."],
+    ingredients: ["Oats", "Milk", "Pear", "Nuts", "Cinnamon"],
+    steps: ["Cook oats with milk.", "Slice pear and add on top.", "Sprinkle nuts and cinnamon."],
     shopping: [
-      { section: "Grains", name: "Oats", qty: 0.5, unit: "cup" },
-      { section: "Dairy", name: "Milk", qty: 1, unit: "cup" },
-      { section: "Fruits", name: "Pear", qty: 0.5, unit: "piece" },
-      { section: "Pantry", name: "Nuts", qty: 1, unit: "tbsp" },
-      { section: "Spices/Condiments", name: "Cinnamon", qty: 1, unit: "pinch" }
+      { section: "Grains", name: "Oats", unit: "cup", qty: 1 / 2 },
+      { section: "Dairy", name: "Milk", unit: "cup", qty: 1 },
+      { section: "Fruits", name: "Pear", unit: "piece", qty: 1 },
+      { section: "Pantry", name: "Nuts", unit: "tbsp", qty: 2 },
+      { section: "Spices/Condiments", name: "Cinnamon", unit: "pinch", qty: 1 }
     ]
   },
-
-  // 10
   {
     id: "r10",
     title: "Muesli with Yogurt & Fruit",
     diet: "vegetarian",
-    meatType: null,
-    caloriesPerPortion: 420,
+    meatType: "",
+    caloriesPerPortion: 360,
     minutes: 5,
     image: "assets/recipes/recipe-10.jpg",
-    ingredients: ["1 cup plain yogurt", "1/2 cup muesli", "1 handful fruit", "1 tbsp nuts (optional)"],
-    steps: ["Add yogurt to bowl.", "Stir in muesli.", "Top with fruit (and nuts if desired)."],
+    ingredients: ["Muesli", "Yogurt", "Fruit", "Nuts (optional)"],
+    steps: ["Add yogurt to a bowl.", "Top with muesli and fruit.", "Add nuts if desired."],
     shopping: [
-      { section: "Dairy", name: "Plain yogurt", qty: 1, unit: "cup" },
-      { section: "Grains", name: "Muesli", qty: 0.5, unit: "cup" },
-      { section: "Fruits", name: "Fresh fruit", qty: 1, unit: "handful" },
-      { section: "Pantry", name: "Nuts", qty: 1, unit: "tbsp" }
+      { section: "Grains", name: "Muesli", unit: "cup", qty: 1 / 2 },
+      { section: "Dairy", name: "Yogurt", unit: "cup", qty: 1 },
+      { section: "Fruits", name: "Fruit", unit: "handful", qty: 1 },
+      { section: "Pantry", name: "Nuts", unit: "tbsp", qty: 1 }
     ]
   },
-
-  // 11
   {
     id: "r11",
     title: "Veggie Egg Muffins (Quick Batch)",
     diet: "vegetarian",
-    meatType: null,
-    caloriesPerPortion: 260,
+    meatType: "",
+    caloriesPerPortion: 280,
     minutes: 18,
     image: "assets/recipes/recipe-11.jpg",
-    ingredients: ["2 eggs", "1 handful chopped veggies (pepper/spinach)", "1 tbsp cheese", "Salt & pepper"],
-    steps: ["Whisk eggs with seasoning.", "Mix in veggies and cheese.", "Bake in muffin cups ~12–15 min at 190°C."],
+    ingredients: ["Eggs", "Bell pepper", "Spinach", "Cheese", "Salt & pepper"],
+    steps: ["Beat eggs and season.", "Mix in chopped veg and cheese.", "Bake in muffin tray ~15 minutes."],
     shopping: [
-      { section: "Dairy", name: "Eggs", qty: 2, unit: "pieces" },
-      { section: "Vegetables", name: "Mixed veggies", qty: 1, unit: "handful" },
-      { section: "Dairy", name: "Cheese", qty: 1, unit: "tbsp" },
-      { section: "Spices/Condiments", name: "Salt & pepper", qty: 1, unit: "pinch" }
+      { section: "Dairy", name: "Eggs", unit: "piece", qty: 2 },
+      { section: "Vegetables", name: "Bell pepper", unit: "piece", qty: 1 / 2 },
+      { section: "Vegetables", name: "Spinach", unit: "handful", qty: 1 },
+      { section: "Dairy", name: "Cheese", unit: "handful", qty: 1 }
     ]
   },
-
-  // 12
   {
     id: "r12",
     title: "Skyr with Honey & Walnuts",
     diet: "vegetarian",
-    meatType: null,
+    meatType: "",
     caloriesPerPortion: 310,
-    minutes: 4,
+    minutes: 3,
     image: "assets/recipes/recipe-12.jpg",
-    ingredients: ["1 cup skyr", "1 tsp honey", "1 tbsp walnuts", "Fruit (optional)"],
-    steps: ["Spoon skyr into a bowl.", "Add honey and walnuts.", "Add fruit if you want extra volume."],
+    ingredients: ["Skyr", "Honey", "Walnuts"],
+    steps: ["Spoon skyr into a bowl.", "Add walnuts.", "Drizzle honey lightly."],
     shopping: [
-      { section: "Dairy", name: "Skyr", qty: 1, unit: "cup" },
-      { section: "Pantry", name: "Honey", qty: 1, unit: "tsp" },
-      { section: "Pantry", name: "Walnuts", qty: 1, unit: "tbsp" },
-      { section: "Fruits", name: "Fruit", qty: 1, unit: "handful" }
+      { section: "Dairy", name: "Skyr", unit: "cup", qty: 1 },
+      { section: "Pantry", name: "Walnuts", unit: "tbsp", qty: 2 },
+      { section: "Pantry", name: "Honey", unit: "tbsp", qty: 1 }
     ]
   },
-
-  // 13 (Fish)
   {
     id: "r13",
     title: "Smoked Salmon Cream Cheese Toast",
     diet: "non-vegetarian",
     meatType: "fish",
-    caloriesPerPortion: 430,
+    caloriesPerPortion: 420,
     minutes: 8,
     image: "assets/recipes/recipe-13.jpg",
-    ingredients: ["2 slices whole-grain bread", "2 tbsp cream cheese", "2–3 slices smoked salmon", "Cucumber (optional)", "Lemon (optional)"],
-    steps: ["Toast bread.", "Spread cream cheese.", "Top with salmon and cucumber. Add lemon if you like."],
+    ingredients: ["Rye bread", "Cream cheese", "Smoked salmon", "Lemon", "Dill (optional)"],
+    steps: ["Toast bread lightly.", "Spread cream cheese.", "Top with salmon and lemon.", "Add dill if you like."],
     shopping: [
-      { section: "Bakery", name: "Whole-grain bread", qty: 2, unit: "slices" },
-      { section: "Dairy", name: "Cream cheese", qty: 2, unit: "tbsp" },
-      { section: "Meat/Fish", name: "Smoked salmon", qty: 3, unit: "slices" },
-      { section: "Vegetables", name: "Cucumber", qty: 0.25, unit: "piece" },
-      { section: "Fruits", name: "Lemon", qty: 0.25, unit: "piece" }
+      { section: "Bakery", name: "Rye bread", unit: "slice", qty: 2 },
+      { section: "Dairy", name: "Cream cheese", unit: "tbsp", qty: 2 },
+      { section: "Meat/Fish", name: "Smoked salmon", unit: "handful", qty: 1 },
+      { section: "Fruits", name: "Lemon", unit: "piece", qty: 1 / 2 }
     ]
   },
-
-  // 14 (Chicken)
   {
     id: "r14",
     title: "Chicken & Avocado Breakfast Wrap",
     diet: "non-vegetarian",
     meatType: "chicken",
-    caloriesPerPortion: 520,
-    minutes: 12,
+    caloriesPerPortion: 480,
+    minutes: 15,
     image: "assets/recipes/recipe-14.jpg",
-    ingredients: ["1 tortilla wrap", "A few slices cooked chicken", "1/2 avocado", "1 handful greens", "Yogurt sauce (optional)"],
-    steps: ["Warm tortilla briefly.", "Layer chicken, avocado, greens.", "Roll tightly. Add yogurt sauce if desired."],
+    ingredients: ["Tortilla wrap", "Cooked chicken", "Avocado", "Tomato", "Yogurt sauce (optional)"],
+    steps: ["Warm tortilla.", "Add chicken, avocado, tomato.", "Roll tight. Slice and serve."],
     shopping: [
-      { section: "Bakery", name: "Tortilla wrap", qty: 1, unit: "piece" },
-      { section: "Meat/Fish", name: "Cooked chicken", qty: 1, unit: "handful" },
-      { section: "Fruits", name: "Avocado", qty: 0.5, unit: "piece" },
-      { section: "Vegetables", name: "Greens", qty: 1, unit: "handful" },
-      { section: "Dairy", name: "Yogurt", qty: 1, unit: "tbsp" }
+      { section: "Bakery", name: "Tortilla wrap", unit: "piece", qty: 1 },
+      { section: "Meat/Fish", name: "Cooked chicken", unit: "handful", qty: 1 },
+      { section: "Fruits", name: "Avocado", unit: "piece", qty: 1 / 2 },
+      { section: "Vegetables", name: "Tomato", unit: "piece", qty: 1 }
     ]
   },
-
-  // 15 (Beef)
   {
     id: "r15",
     title: "Beef & Egg Breakfast Sandwich",
     diet: "non-vegetarian",
     meatType: "beef",
-    caloriesPerPortion: 560,
-    minutes: 15,
+    caloriesPerPortion: 520,
+    minutes: 18,
     image: "assets/recipes/recipe-15.jpg",
-    ingredients: ["1 whole-grain bun", "1 egg", "A few slices roast beef", "Tomato slices", "Mustard (optional)"],
-    steps: ["Toast bun.", "Cook egg (fried or scrambled).", "Assemble with roast beef and tomato."],
+    ingredients: ["Bread roll", "Beef slices", "Egg", "Leafy greens", "Mustard (optional)"],
+    steps: ["Cook egg to your liking.", "Warm beef slices.", "Assemble sandwich with greens.", "Add mustard if desired."],
     shopping: [
-      { section: "Bakery", name: "Whole-grain bun", qty: 1, unit: "piece" },
-      { section: "Dairy", name: "Egg", qty: 1, unit: "piece" },
-      { section: "Meat/Fish", name: "Roast beef slices", qty: 1, unit: "handful" },
-      { section: "Vegetables", name: "Tomato", qty: 0.5, unit: "piece" },
-      { section: "Spices/Condiments", name: "Mustard", qty: 1, unit: "tsp" }
+      { section: "Bakery", name: "Bread roll", unit: "piece", qty: 1 },
+      { section: "Meat/Fish", name: "Beef slices", unit: "handful", qty: 1 },
+      { section: "Dairy", name: "Egg", unit: "piece", qty: 1 },
+      { section: "Vegetables", name: "Leafy greens", unit: "handful", qty: 1 }
     ]
   },
-
-  // 16 (Fish)
   {
     id: "r16",
     title: "Tuna & Egg Protein Bowl",
     diet: "non-vegetarian",
     meatType: "fish",
-    caloriesPerPortion: 480,
-    minutes: 10,
+    caloriesPerPortion: 430,
+    minutes: 12,
     image: "assets/recipes/recipe-16.jpg",
-    ingredients: ["1 boiled egg", "1/2 can tuna", "1 handful tomatoes/cucumber", "1 tbsp yogurt or olive oil", "Salt & pepper"],
-    steps: ["Add tuna and chopped veggies to a bowl.", "Add sliced boiled egg.", "Mix with yogurt or olive oil, season and eat."],
+    ingredients: ["Tuna (canned)", "Egg", "Cucumber", "Cherry tomatoes", "Olive oil"],
+    steps: ["Boil egg (or use pre-boiled).", "Mix tuna with a bit of olive oil.", "Add veg and egg on top."],
     shopping: [
-      { section: "Dairy", name: "Egg", qty: 1, unit: "piece" },
-      { section: "Meat/Fish", name: "Tuna (canned)", qty: 0.5, unit: "can" },
-      { section: "Vegetables", name: "Mixed veggies", qty: 1, unit: "handful" },
-      { section: "Dairy", name: "Yogurt", qty: 1, unit: "tbsp" },
-      { section: "Spices/Condiments", name: "Salt & pepper", qty: 1, unit: "pinch" }
+      { section: "Meat/Fish", name: "Tuna", unit: "can", qty: 1 },
+      { section: "Dairy", name: "Egg", unit: "piece", qty: 1 },
+      { section: "Vegetables", name: "Cucumber", unit: "piece", qty: 1 / 2 },
+      { section: "Vegetables", name: "Cherry tomatoes", unit: "handful", qty: 1 },
+      { section: "Pantry", name: "Olive oil", unit: "tbsp", qty: 1 }
     ]
   },
-
-  // 17 (Pork)
   {
     id: "r17",
     title: "Eggs with Turkey/Pork Ham & Tomatoes",
     diet: "non-vegetarian",
     meatType: "pork",
-    caloriesPerPortion: 520,
+    caloriesPerPortion: 470,
     minutes: 12,
     image: "assets/recipes/recipe-17.jpg",
-    ingredients: ["2 eggs", "A few slices ham", "1 tomato", "1 tsp olive oil", "Salt & pepper"],
-    steps: ["Warm oil.", "Cook eggs as you like.", "Serve with ham and sliced tomato."],
+    ingredients: ["Eggs", "Ham slices", "Tomatoes", "Olive oil", "Salt & pepper"],
+    steps: ["Sear ham briefly.", "Cook eggs (scramble or fried).", "Serve with tomatoes and seasoning."],
     shopping: [
-      { section: "Dairy", name: "Eggs", qty: 2, unit: "pieces" },
-      { section: "Meat/Fish", name: "Ham slices", qty: 1, unit: "handful" },
-      { section: "Vegetables", name: "Tomato", qty: 1, unit: "piece" },
-      { section: "Pantry", name: "Olive oil", qty: 1, unit: "tsp" },
-      { section: "Spices/Condiments", name: "Salt & pepper", qty: 1, unit: "pinch" }
+      { section: "Dairy", name: "Eggs", unit: "piece", qty: 2 },
+      { section: "Meat/Fish", name: "Ham slices", unit: "handful", qty: 1 },
+      { section: "Vegetables", name: "Tomatoes", unit: "piece", qty: 1 },
+      { section: "Pantry", name: "Olive oil", unit: "tbsp", qty: 1 }
     ]
   },
-
-  // 18 (Lamb)
   {
     id: "r18",
     title: "Lamb Sausage & Egg Plate",
     diet: "non-vegetarian",
     meatType: "lamb",
-    caloriesPerPortion: 610,
+    caloriesPerPortion: 560,
     minutes: 18,
     image: "assets/recipes/recipe-18.jpg",
-    ingredients: ["1 small lamb sausage", "1 egg", "1 handful greens", "Cherry tomatoes", "Salt & pepper"],
-    steps: ["Cook sausage in pan.", "Cook egg in same pan.", "Serve with greens and tomatoes."],
+    ingredients: ["Lamb sausage", "Eggs", "Tomatoes", "Greens"],
+    steps: ["Cook sausage until browned.", "Cook eggs.", "Serve with tomatoes and greens."],
     shopping: [
-      { section: "Meat/Fish", name: "Lamb sausage", qty: 1, unit: "piece" },
-      { section: "Dairy", name: "Egg", qty: 1, unit: "piece" },
-      { section: "Vegetables", name: "Greens", qty: 1, unit: "handful" },
-      { section: "Vegetables", name: "Cherry tomatoes", qty: 1, unit: "handful" },
-      { section: "Spices/Condiments", name: "Salt & pepper", qty: 1, unit: "pinch" }
+      { section: "Meat/Fish", name: "Lamb sausage", unit: "piece", qty: 2 },
+      { section: "Dairy", name: "Eggs", unit: "piece", qty: 2 },
+      { section: "Vegetables", name: "Tomatoes", unit: "piece", qty: 1 },
+      { section: "Vegetables", name: "Greens", unit: "handful", qty: 1 }
     ]
   },
-
-  // 19 (Vegetarian)
   {
     id: "r19",
     title: "Berry Smoothie (Protein-Style)",
     diet: "vegetarian",
-    meatType: null,
-    caloriesPerPortion: 390,
+    meatType: "",
+    caloriesPerPortion: 380,
     minutes: 6,
     image: "assets/recipes/recipe-19.jpg",
-    ingredients: ["1 cup milk", "1 cup berries", "1/2 banana", "2 tbsp yogurt", "1 tbsp oats (optional)"],
-    steps: ["Add everything to blender.", "Blend until smooth.", "Taste and adjust thickness with milk."],
+    ingredients: ["Greek yogurt", "Berries", "Milk", "Chia seeds (optional)"],
+    steps: ["Blend yogurt, berries, and milk until smooth.", "Add chia seeds if desired.", "Serve cold."],
     shopping: [
-      { section: "Dairy", name: "Milk", qty: 1, unit: "cup" },
-      { section: "Fruits", name: "Berries", qty: 1, unit: "cup" },
-      { section: "Fruits", name: "Banana", qty: 0.5, unit: "piece" },
-      { section: "Dairy", name: "Yogurt", qty: 2, unit: "tbsp" },
-      { section: "Grains", name: "Oats", qty: 1, unit: "tbsp" }
+      { section: "Dairy", name: "Greek yogurt", unit: "cup", qty: 1 },
+      { section: "Fruits", name: "Berries", unit: "handful", qty: 2 },
+      { section: "Dairy", name: "Milk", unit: "cup", qty: 1 / 2 },
+      { section: "Pantry", name: "Chia seeds", unit: "tbsp", qty: 1 }
     ]
   },
-
-  // 20 (Vegetarian)
   {
     id: "r20",
     title: "Caprese Breakfast Toast",
     diet: "vegetarian",
-    meatType: null,
-    caloriesPerPortion: 450,
+    meatType: "",
+    caloriesPerPortion: 390,
     minutes: 10,
     image: "assets/recipes/recipe-20.jpg",
-    ingredients: ["2 slices whole-grain bread", "Mozzarella slices", "Tomato slices", "Basil", "Olive oil"],
-    steps: ["Toast bread.", "Top with mozzarella and tomato.", "Finish with basil + a drizzle of olive oil."],
+    ingredients: ["Whole-grain bread", "Mozzarella", "Tomatoes", "Basil", "Olive oil"],
+    steps: ["Toast bread.", "Top with mozzarella and tomatoes.", "Add basil and olive oil."],
     shopping: [
-      { section: "Bakery", name: "Whole-grain bread", qty: 2, unit: "slices" },
-      { section: "Dairy", name: "Mozzarella", qty: 1, unit: "handful" },
-      { section: "Vegetables", name: "Tomato", qty: 1, unit: "piece" },
-      { section: "Spices/Condiments", name: "Basil", qty: 1, unit: "handful" },
-      { section: "Pantry", name: "Olive oil", qty: 1, unit: "tsp" }
+      { section: "Bakery", name: "Whole-grain bread", unit: "slice", qty: 2 },
+      { section: "Dairy", name: "Mozzarella", unit: "handful", qty: 1 },
+      { section: "Vegetables", name: "Tomatoes", unit: "piece", qty: 1 },
+      { section: "Spices/Condiments", name: "Basil", unit: "handful", qty: 1 },
+      { section: "Pantry", name: "Olive oil", unit: "tbsp", qty: 1 }
     ]
   },
-
-  // 21 (Fish)
   {
     id: "r21",
     title: "Sardines on Rye with Lemon",
     diet: "non-vegetarian",
     meatType: "fish",
-    caloriesPerPortion: 520,
-    minutes: 6,
+    caloriesPerPortion: 440,
+    minutes: 8,
     image: "assets/recipes/recipe-21.jpg",
-    ingredients: ["2 slices rye bread", "1/2 can sardines", "Lemon wedge", "Pepper", "Cucumber (optional)"],
-    steps: ["Toast rye lightly (optional).", "Top with sardines.", "Add lemon + pepper, cucumber if you like."],
+    ingredients: ["Rye bread", "Sardines", "Lemon", "Cucumber (optional)", "Pepper"],
+    steps: ["Toast rye lightly.", "Top with sardines.", "Finish with lemon and pepper.", "Add cucumber if you like."],
     shopping: [
-      { section: "Bakery", name: "Rye bread", qty: 2, unit: "slices" },
-      { section: "Meat/Fish", name: "Sardines (canned)", qty: 0.5, unit: "can" },
-      { section: "Fruits", name: "Lemon", qty: 0.25, unit: "piece" },
-      { section: "Spices/Condiments", name: "Pepper", qty: 1, unit: "pinch" },
-      { section: "Vegetables", name: "Cucumber", qty: 0.25, unit: "piece" }
+      { section: "Bakery", name: "Rye bread", unit: "slice", qty: 2 },
+      { section: "Meat/Fish", name: "Sardines", unit: "can", qty: 1 },
+      { section: "Fruits", name: "Lemon", unit: "piece", qty: 1 / 2 },
+      { section: "Vegetables", name: "Cucumber", unit: "piece", qty: 1 / 2 }
     ]
   },
-
-  // 22 (Chicken)
   {
     id: "r22",
     title: "Chicken & Veggie Egg Scramble",
     diet: "non-vegetarian",
     meatType: "chicken",
-    caloriesPerPortion: 540,
+    caloriesPerPortion: 480,
     minutes: 15,
     image: "assets/recipes/recipe-22.jpg",
-    ingredients: ["2 eggs", "1 handful cooked chicken", "1 handful mixed veggies", "Salt & pepper"],
-    steps: ["Warm chicken and veggies in pan.", "Add beaten eggs.", "Scramble until just set."],
+    ingredients: ["Eggs", "Cooked chicken", "Bell pepper", "Spinach", "Olive oil"],
+    steps: ["Sauté veg briefly.", "Add chicken to warm through.", "Scramble eggs into the pan until set."],
     shopping: [
-      { section: "Dairy", name: "Eggs", qty: 2, unit: "pieces" },
-      { section: "Meat/Fish", name: "Cooked chicken", qty: 1, unit: "handful" },
-      { section: "Vegetables", name: "Mixed veggies", qty: 1, unit: "handful" },
-      { section: "Spices/Condiments", name: "Salt & pepper", qty: 1, unit: "pinch" }
+      { section: "Dairy", name: "Eggs", unit: "piece", qty: 2 },
+      { section: "Meat/Fish", name: "Cooked chicken", unit: "handful", qty: 1 },
+      { section: "Vegetables", name: "Bell pepper", unit: "piece", qty: 1 / 2 },
+      { section: "Vegetables", name: "Spinach", unit: "handful", qty: 1 },
+      { section: "Pantry", name: "Olive oil", unit: "tbsp", qty: 1 }
     ]
   },
-
-  // 23 (Beef)
   {
     id: "r23",
     title: "Beef & Tomato Breakfast Wrap",
     diet: "non-vegetarian",
     meatType: "beef",
-    caloriesPerPortion: 590,
+    caloriesPerPortion: 520,
     minutes: 15,
     image: "assets/recipes/recipe-23.jpg",
-    ingredients: ["1 tortilla wrap", "A few slices cooked beef", "Tomato", "Greens", "1 tbsp yogurt sauce"],
-    steps: ["Warm wrap.", "Add beef, tomato, greens.", "Add yogurt sauce and roll."],
+    ingredients: ["Tortilla wrap", "Beef slices", "Tomato", "Leafy greens", "Yogurt sauce (optional)"],
+    steps: ["Warm tortilla.", "Add beef, tomato, greens.", "Roll tight and slice."],
     shopping: [
-      { section: "Bakery", name: "Tortilla wrap", qty: 1, unit: "piece" },
-      { section: "Meat/Fish", name: "Cooked beef", qty: 1, unit: "handful" },
-      { section: "Vegetables", name: "Tomato", qty: 1, unit: "piece" },
-      { section: "Vegetables", name: "Greens", qty: 1, unit: "handful" },
-      { section: "Dairy", name: "Yogurt", qty: 1, unit: "tbsp" }
+      { section: "Bakery", name: "Tortilla wrap", unit: "piece", qty: 1 },
+      { section: "Meat/Fish", name: "Beef slices", unit: "handful", qty: 1 },
+      { section: "Vegetables", name: "Tomato", unit: "piece", qty: 1 },
+      { section: "Vegetables", name: "Leafy greens", unit: "handful", qty: 1 }
     ]
   },
-
-  // 24 (Vegetarian)
   {
     id: "r24",
     title: "Hummus & Cucumber Toast",
     diet: "vegetarian",
-    meatType: null,
-    caloriesPerPortion: 420,
-    minutes: 7,
+    meatType: "",
+    caloriesPerPortion: 360,
+    minutes: 8,
     image: "assets/recipes/recipe-24.jpg",
-    ingredients: ["2 slices whole-grain bread", "3 tbsp hummus", "Cucumber slices", "Pepper", "Olive oil (optional)"],
-    steps: ["Toast bread.", "Spread hummus.", "Top with cucumber and pepper (olive oil optional)."],
+    ingredients: ["Whole-grain bread", "Hummus", "Cucumber", "Olive oil", "Pepper"],
+    steps: ["Toast bread.", "Spread hummus.", "Top with cucumber slices.", "Finish with olive oil and pepper."],
     shopping: [
-      { section: "Bakery", name: "Whole-grain bread", qty: 2, unit: "slices" },
-      { section: "Pantry", name: "Hummus", qty: 3, unit: "tbsp" },
-      { section: "Vegetables", name: "Cucumber", qty: 0.5, unit: "piece" },
-      { section: "Spices/Condiments", name: "Pepper", qty: 1, unit: "pinch" },
-      { section: "Pantry", name: "Olive oil", qty: 1, unit: "tsp" }
+      { section: "Bakery", name: "Whole-grain bread", unit: "slice", qty: 2 },
+      { section: "Pantry", name: "Hummus", unit: "tbsp", qty: 3 },
+      { section: "Vegetables", name: "Cucumber", unit: "piece", qty: 1 / 2 },
+      { section: "Pantry", name: "Olive oil", unit: "tbsp", qty: 1 }
     ]
   },
-
-  // 25 (Vegetarian)
   {
     id: "r25",
     title: "Quick Apple & Cheese Plate",
     diet: "vegetarian",
-    meatType: null,
-    caloriesPerPortion: 430,
+    meatType: "",
+    caloriesPerPortion: 340,
     minutes: 5,
     image: "assets/recipes/recipe-25.jpg",
-    ingredients: ["1 apple", "1 small handful cheese cubes", "1 tbsp nuts", "1 slice rye bread (optional)"],
-    steps: ["Slice apple.", "Add cheese and nuts.", "Add bread if you want extra energy."],
+    ingredients: ["Apple", "Cheese", "Nuts (optional)"],
+    steps: ["Slice apple.", "Add cheese alongside.", "Add a few nuts if desired."],
     shopping: [
-      { section: "Fruits", name: "Apple", qty: 1, unit: "piece" },
-      { section: "Dairy", name: "Cheese", qty: 1, unit: "handful" },
-      { section: "Pantry", name: "Nuts", qty: 1, unit: "tbsp" },
-      { section: "Bakery", name: "Rye bread", qty: 1, unit: "slice" }
+      { section: "Fruits", name: "Apple", unit: "piece", qty: 1 },
+      { section: "Dairy", name: "Cheese", unit: "handful", qty: 1 },
+      { section: "Pantry", name: "Nuts", unit: "tbsp", qty: 1 }
     ]
   },
-
-  // 26 (Pork)
   {
     id: "r26",
     title: "Pork Ham & Egg Rice Bowl",
     diet: "non-vegetarian",
     meatType: "pork",
-    caloriesPerPortion: 620,
+    caloriesPerPortion: 540,
     minutes: 18,
     image: "assets/recipes/recipe-26.jpg",
-    ingredients: ["1 cup cooked rice (leftover)", "1 egg", "A few slices ham", "Spring onion (optional)", "Soy sauce (optional)"],
-    steps: ["Warm rice in pan.", "Add ham.", "Top with egg (fried). Add spring onion/soy if desired."],
+    ingredients: ["Cooked rice", "Pork ham", "Eggs", "Spring onion (optional)", "Soy sauce (optional)"],
+    steps: ["Warm rice.", "Sear ham pieces briefly.", "Cook eggs (scramble or fried).", "Assemble bowl and add spring onion."],
     shopping: [
-      { section: "Pantry", name: "Cooked rice", qty: 1, unit: "cup" },
-      { section: "Dairy", name: "Egg", qty: 1, unit: "piece" },
-      { section: "Meat/Fish", name: "Ham slices", qty: 1, unit: "handful" },
-      { section: "Vegetables", name: "Spring onion", qty: 1, unit: "piece" },
-      { section: "Spices/Condiments", name: "Soy sauce", qty: 1, unit: "tsp" }
+      { section: "Grains", name: "Cooked rice", unit: "cup", qty: 1 },
+      { section: "Meat/Fish", name: "Pork ham", unit: "handful", qty: 1 },
+      { section: "Dairy", name: "Eggs", unit: "piece", qty: 2 },
+      { section: "Vegetables", name: "Spring onion", unit: "handful", qty: 1 },
+      { section: "Pantry", name: "Soy sauce", unit: "tbsp", qty: 1 }
     ]
   },
-
-  // 27 (Vegetarian)
   {
     id: "r27",
     title: "Ricotta Toast with Berries",
     diet: "vegetarian",
-    meatType: null,
-    caloriesPerPortion: 470,
-    minutes: 7,
+    meatType: "",
+    caloriesPerPortion: 420,
+    minutes: 8,
     image: "assets/recipes/recipe-27.jpg",
-    ingredients: ["2 slices toast", "Ricotta", "Berries", "Honey (optional)", "Mint (optional)"],
-    steps: ["Toast bread.", "Spread ricotta.", "Top with berries and a little honey."],
+    ingredients: ["Whole-grain bread", "Ricotta", "Berries", "Honey", "Nuts (optional)"],
+    steps: ["Toast bread.", "Spread ricotta.", "Top with berries.", "Add honey and nuts if desired."],
     shopping: [
-      { section: "Bakery", name: "Bread", qty: 2, unit: "slices" },
-      { section: "Dairy", name: "Ricotta", qty: 3, unit: "tbsp" },
-      { section: "Fruits", name: "Berries", qty: 1, unit: "handful" },
-      { section: "Pantry", name: "Honey", qty: 1, unit: "tsp" },
-      { section: "Spices/Condiments", name: "Mint", qty: 1, unit: "pinch" }
+      { section: "Bakery", name: "Whole-grain bread", unit: "slice", qty: 2 },
+      { section: "Dairy", name: "Ricotta", unit: "tbsp", qty: 3 },
+      { section: "Fruits", name: "Berries", unit: "handful", qty: 1 },
+      { section: "Pantry", name: "Honey", unit: "tbsp", qty: 1 },
+      { section: "Pantry", name: "Nuts", unit: "tbsp", qty: 1 }
     ]
   },
-
-  // 28 (Fish)
   {
     id: "r28",
     title: "Egg + Smoked Salmon Mini Plate",
     diet: "non-vegetarian",
     meatType: "fish",
-    caloriesPerPortion: 520,
+    caloriesPerPortion: 460,
     minutes: 12,
     image: "assets/recipes/recipe-28.jpg",
-    ingredients: ["2 eggs", "2 slices smoked salmon", "1 handful greens", "Lemon (optional)"],
-    steps: ["Cook eggs your way.", "Plate with salmon and greens.", "Add lemon if you like."],
+    ingredients: ["Eggs", "Smoked salmon", "Cucumber", "Avocado (optional)", "Lemon"],
+    steps: ["Boil eggs (or use pre-boiled).", "Arrange salmon, cucumber, and eggs on a plate.", "Finish with lemon."],
     shopping: [
-      { section: "Dairy", name: "Eggs", qty: 2, unit: "pieces" },
-      { section: "Meat/Fish", name: "Smoked salmon", qty: 2, unit: "slices" },
-      { section: "Vegetables", name: "Greens", qty: 1, unit: "handful" },
-      { section: "Fruits", name: "Lemon", qty: 0.25, unit: "piece" }
+      { section: "Dairy", name: "Eggs", unit: "piece", qty: 2 },
+      { section: "Meat/Fish", name: "Smoked salmon", unit: "handful", qty: 1 },
+      { section: "Vegetables", name: "Cucumber", unit: "piece", qty: 1 / 2 },
+      { section: "Fruits", name: "Lemon", unit: "piece", qty: 1 / 2 },
+      { section: "Fruits", name: "Avocado", unit: "piece", qty: 1 / 2 }
     ]
   },
-
-  // 29 (Vegetarian)
   {
     id: "r29",
     title: "Warm Oatmeal with Cocoa & Banana",
     diet: "vegetarian",
-    meatType: null,
+    meatType: "",
     caloriesPerPortion: 430,
-    minutes: 10,
+    minutes: 12,
     image: "assets/recipes/recipe-29.jpg",
-    ingredients: ["1/2 cup oats", "1 cup milk", "1 banana", "1 tsp cocoa", "1 tbsp nuts"],
+    ingredients: ["Oats", "Milk", "Cocoa", "Banana", "Nuts (optional)"],
     steps: ["Cook oats with milk.", "Stir in cocoa.", "Top with banana and nuts."],
     shopping: [
-      { section: "Grains", name: "Oats", qty: 0.5, unit: "cup" },
-      { section: "Dairy", name: "Milk", qty: 1, unit: "cup" },
-      { section: "Fruits", name: "Banana", qty: 1, unit: "piece" },
-      { section: "Pantry", name: "Cocoa powder", qty: 1, unit: "tsp" },
-      { section: "Pantry", name: "Nuts", qty: 1, unit: "tbsp" }
+      { section: "Grains", name: "Oats", unit: "cup", qty: 1 / 2 },
+      { section: "Dairy", name: "Milk", unit: "cup", qty: 1 },
+      { section: "Pantry", name: "Cocoa", unit: "tbsp", qty: 1 },
+      { section: "Fruits", name: "Banana", unit: "piece", qty: 1 },
+      { section: "Pantry", name: "Nuts", unit: "tbsp", qty: 1 }
     ]
   },
-
-  // 30 (Vegetarian)
   {
     id: "r30",
     title: "Simple Breakfast Parfait",
     diet: "vegetarian",
-    meatType: null,
-    caloriesPerPortion: 410,
-    minutes: 6,
+    meatType: "",
+    caloriesPerPortion: 360,
+    minutes: 5,
     image: "assets/recipes/recipe-30.jpg",
-    ingredients: ["1 cup yogurt", "1/2 cup granola (small handful)", "1 handful fruit", "1 tbsp seeds (optional)"],
-    steps: ["Layer yogurt, fruit, and granola in a glass.", "Repeat once.", "Top with seeds if you like."],
+    ingredients: ["Yogurt", "Granola", "Berries", "Chia seeds (optional)"],
+    steps: ["Layer yogurt and granola in a glass.", "Top with berries.", "Add chia seeds if desired."],
     shopping: [
-      { section: "Dairy", name: "Yogurt", qty: 1, unit: "cup" },
-      { section: "Pantry", name: "Granola", qty: 0.5, unit: "cup" },
-      { section: "Fruits", name: "Fruit", qty: 1, unit: "handful" },
-      { section: "Pantry", name: "Seeds", qty: 1, unit: "tbsp" }
+      { section: "Dairy", name: "Yogurt", unit: "cup", qty: 1 },
+      { section: "Pantry", name: "Granola", unit: "handful", qty: 1 },
+      { section: "Fruits", name: "Berries", unit: "handful", qty: 1 },
+      { section: "Pantry", name: "Chia seeds", unit: "tbsp", qty: 1 }
     ]
   }
 ];
-

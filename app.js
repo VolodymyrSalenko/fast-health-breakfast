@@ -1,53 +1,40 @@
 /**
- * app.js — Fast & Health
- * Plain HTML/CSS/JS single-page app (GitHub Pages friendly)
+ * app.js — Fast & Health (No React)
+ * Single-page: Home / Recipes / Weekly Planner / Contacts
  *
- * Covered:
- * ✅ Home: expandable educational articles (accordion)
- * ✅ Recipes: 30 cards, filters (diet/meat/search), inline expand “View Recipe”
- * ✅ Add to Weekly Plan: modal dialog (day + portions), overwrite rule
- * ✅ Weekly Planner: 7-day table (with small recipe image) + clear day/week
- * ✅ Shopping List: grouped by store sections, scaled by portions, check-off UI (not saved)
- * ✅ LocalStorage wiring:
- *    - Save/load weekly plan only
- *    - Strict validation, overwrite rules
- *    - Cross-tab sync
- * ✅ Step 6: PDF generation:
- *    - PDF #1: Weekly plan + selected recipes (with images), table links to recipe pages
- *    - PDF #2: Shopping list grouped by store sections with totals
- * ✅ Step 7: Share buttons (WhatsApp + Email)
- * ✅ Step 8: Contact form handling (no backend):
- *    - Works with Formspree-style email form service OR falls back gracefully
- *    - Client-side validation + char limit + loading state
- *    - Success + error UI (inline)
- *    - Anti-bot honeypot support if the HTML includes it
+ * Key changes requested:
+ * ✅ Wider layout handled by CSS container max-width
+ * ✅ Stronger section headings handled by CSS
+ * ✅ Hero responsiveness: image object-fit & object-position + panel for text
+ * ✅ Recipes: two equal buttons on same row
+ * ✅ Add modal: Cancel closes; days show current planned recipe titles
+ * ✅ Shopping list redesign: table-like columns (Item / Quantity / Checkbox)
+ * ✅ Removed WhatsApp/Email share buttons + related code
+ * ✅ Contacts: remove social card; bigger form; no note; show success UI (no backend)
+ * ✅ Footer: social icons + labels open “Coming soon” modal
+ * ✅ LocalStorage: weekly plan persists
+ * ✅ Shopping list checkboxes: saved in LocalStorage by default (better UX)
  *
- * Depends on: data.js (DAYS, HOME_ARTICLES, RECIPES)
- * Requires (already included in index.html):
+ * Libraries (loaded in index.html):
  * - jsPDF UMD: window.jspdf.jsPDF
- * - jsPDF AutoTable plugin: doc.autoTable
+ * - jsPDF AutoTable: doc.autoTable
  */
 
 /* ===========================
-   Storage + App State
+   Storage keys
    =========================== */
 
-const STORAGE_KEY = "fastHealth_weeklyPlan_v1";
+const STORAGE_KEY_PLAN = "fastHealth_weeklyPlan_v1";
+const STORAGE_KEY_SHOPCHECKS = "fastHealth_shopChecks_v1";
 
-// Shopping check state is NOT persisted (kept only in-memory for current session)
-const shoppingChecks = Object.create(null);
+/* ===========================
+   App state
+   =========================== */
 
-/**
- * Weekly plan shape (stored in LocalStorage):
- * {
- *   Monday:   { recipeId: "r1", portions: 2 } | null,
- *   Tuesday:  null,
- *   ...
- * }
- */
 let weeklyPlan = loadPlan();
+let shoppingChecks = loadShoppingChecks(); // saved by default (can be changed easily)
 
-/* Fixed store sections (requested) */
+/* Fixed store sections */
 const STORE_SECTIONS = [
   "Vegetables",
   "Fruits",
@@ -62,7 +49,7 @@ const STORE_SECTIONS = [
 ];
 
 /* ===========================
-   App Bootstrap
+   Boot
    =========================== */
 
 (function init() {
@@ -72,267 +59,55 @@ const STORE_SECTIONS = [
 
   bindDevModal();
   bindContactCounter();
+  bindContactForm();
 
   renderHomeArticles();
   renderRecipes();
 
+  bindAddToPlanModal();
+
   renderPlannerTable();
   renderShoppingList();
 
-  bindAddToPlanModal();
   bindCrossTabPlanSync();
-
-  // Step 6
   bindPdfButtons();
-
-  // Step 7
-  bindShareButtons();
-
-  // Step 8
-  bindContactForm();
 })();
 
 /* ===========================
-   Modal: Under development
+   Under development modal (footer icons)
    =========================== */
 
 function bindDevModal() {
-  const devModal = document.getElementById("devModal");
-  const devModalText = document.getElementById("devModalText");
-  const closeModalBtn = document.getElementById("closeModalBtn");
+  const modal = document.getElementById("devModal");
+  const modalText = document.getElementById("devModalText");
+  const closeBtn = document.getElementById("closeModalBtn");
 
-  function openDevModal(platformName) {
-    if (devModalText) devModalText.textContent = `${platformName}: This page is under development.`;
-    if (devModal && typeof devModal.showModal === "function") devModal.showModal();
+  function open(platformName) {
+    if (modalText) modalText.textContent = `${platformName}: This page is under development.`;
+    if (modal && typeof modal.showModal === "function") modal.showModal();
     else alert(`${platformName}: This page is under development.`);
   }
 
-  if (closeModalBtn && devModal) {
-    closeModalBtn.addEventListener("click", () => devModal.close());
-  }
+  if (closeBtn && modal) closeBtn.addEventListener("click", () => modal.close());
 
   document.querySelectorAll("[data-social]").forEach((btn) => {
-    btn.addEventListener("click", () => openDevModal(btn.dataset.social || "Social"));
+    btn.addEventListener("click", () => open(btn.dataset.social || "Social"));
   });
 }
 
 /* ===========================
-   Contact message counter
-   =========================== */
-
-function bindContactCounter() {
-  const messageEl = document.getElementById("message");
-  const countEl = document.getElementById("messageCount");
-  if (!messageEl || !countEl) return;
-
-  const updateCount = () => {
-    countEl.textContent = `${messageEl.value.length} / 1500`;
-  };
-  messageEl.addEventListener("input", updateCount);
-  updateCount();
-}
-
-/* ===========================
-   Step 8: Contact form (Formspree / email form service)
-   =========================== */
-
-/**
- * Expected HTML:
- * <form id="contactForm" action="https://formspree.io/f/XXXXXX" method="POST">
- *  <input id="name" name="name" required>
- *  <input id="email" name="email" required>
- *  <input id="phone" name="phone">
- *  <textarea id="message" name="message" maxlength="1500" required></textarea>
- *  <button id="contactSubmitBtn" type="submit">Send message</button>
- *  <!-- optional honeypot -->
- *  <input type="text" name="_gotcha" style="display:none">
- * </form>
- *
- * This JS:
- * - Uses fetch() for nicer UX (does not navigate away)
- * - If action is missing, shows a helpful error message
- * - If service blocks CORS, falls back to native submit
- */
-function bindContactForm() {
-  const form = document.getElementById("contactForm");
-  if (!form) return;
-
-  const submitBtn = document.getElementById("contactSubmitBtn") || form.querySelector('button[type="submit"]');
-
-  // Create (or reuse) a status element under the form
-  let statusEl = document.getElementById("contactStatus");
-  if (!statusEl) {
-    statusEl = document.createElement("div");
-    statusEl.id = "contactStatus";
-    statusEl.setAttribute("aria-live", "polite");
-    statusEl.style.marginTop = "10px";
-    statusEl.style.fontSize = "14px";
-    form.appendChild(statusEl);
-  }
-
-  const nameEl = document.getElementById("name") || form.querySelector('[name="name"]');
-  const emailEl = document.getElementById("email") || form.querySelector('[name="email"]');
-  const phoneEl = document.getElementById("phone") || form.querySelector('[name="phone"]');
-  const messageEl = document.getElementById("message") || form.querySelector('[name="message"]');
-  const gotchaEl = form.querySelector('[name="_gotcha"]'); // optional honeypot
-
-  function setStatus(type, text) {
-    // type: "success" | "error" | "info"
-    statusEl.textContent = text;
-    statusEl.style.padding = "10px 12px";
-    statusEl.style.borderRadius = "12px";
-    statusEl.style.border = "1px solid var(--border)";
-    statusEl.style.background = "var(--card)";
-    statusEl.style.color = "var(--text)";
-
-    if (type === "success") {
-      statusEl.style.borderColor = "rgba(46, 160, 67, .35)";
-    }
-    if (type === "error") {
-      statusEl.style.borderColor = "rgba(220, 38, 38, .35)";
-    }
-  }
-
-  function clearStatus() {
-    statusEl.textContent = "";
-    statusEl.style.padding = "0";
-    statusEl.style.border = "none";
-    statusEl.style.background = "transparent";
-  }
-
-  // Client-side validation
-  function validate() {
-    const name = String(nameEl?.value || "").trim();
-    const email = String(emailEl?.value || "").trim();
-    const phone = String(phoneEl?.value || "").trim();
-    const msg = String(messageEl?.value || "").trim();
-
-    if (!name) return { ok: false, message: "Please enter your name." };
-    if (!email) return { ok: false, message: "Please enter your email." };
-    if (!isValidEmail(email)) return { ok: false, message: "Please enter a valid email address." };
-    if (!msg) return { ok: false, message: "Please write a message." };
-    if (msg.length > 1500) return { ok: false, message: "Message is too long (max 1500 characters)." };
-
-    // basic phone sanity (optional)
-    if (phone && phone.length < 6) return { ok: false, message: "Phone number looks too short. You can also leave it empty." };
-
-    // honeypot (if filled, silently pretend success)
-    if (gotchaEl && String(gotchaEl.value || "").trim()) {
-      return { ok: true, bot: true };
-    }
-
-    return { ok: true };
-  }
-
-  // Improve UX: clear status when user edits fields
-  form.querySelectorAll("input, textarea").forEach((el) => {
-    el.addEventListener("input", () => clearStatus());
-  });
-
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const v = validate();
-    if (!v.ok) {
-      setStatus("error", v.message);
-      return;
-    }
-
-    // Honeypot triggered → act like success and reset quietly
-    if (v.bot) {
-      form.reset();
-      bindContactCounter(); // refresh counter if present
-      setStatus("success", "Thanks! Your message has been sent.");
-      return;
-    }
-
-    const action = form.getAttribute("action");
-    const method = (form.getAttribute("method") || "POST").toUpperCase();
-
-    if (!action) {
-      setStatus(
-        "error",
-        "Contact form is not configured yet. Please add your email form service URL to the form action attribute."
-      );
-      return;
-    }
-
-    const payload = new FormData(form);
-
-    // Loading UI
-    const oldText = submitBtn ? submitBtn.textContent : "";
-    if (submitBtn) {
-      submitBtn.disabled = true;
-      submitBtn.textContent = "Sending…";
-    }
-    setStatus("info", "Sending your message…");
-
-    try {
-      // Most services (Formspree) accept JSON or FormData.
-      // We’ll send FormData and ask for JSON response.
-      const res = await fetch(action, {
-        method,
-        body: payload,
-        headers: { Accept: "application/json" }
-      });
-
-      if (res.ok) {
-        form.reset();
-        bindContactCounter(); // refresh counter
-        setStatus("success", "Thanks! Your message has been sent. We’ll get back to you soon.");
-        return;
-      }
-
-      // Try to parse error
-      let errText = "Sorry — something went wrong while sending your message.";
-      try {
-        const data = await res.json();
-        if (data?.errors?.length) {
-          errText = data.errors.map((x) => x.message).join(" ");
-        }
-      } catch {
-        // ignore
-      }
-      setStatus("error", errText);
-    } catch (err) {
-      // CORS issues can happen depending on provider settings.
-      // Fallback to normal form submit (opens provider page).
-      console.warn("Fetch failed; falling back to native submit.", err);
-
-      setStatus("info", "Opening secure form submission…");
-      setTimeout(() => {
-        // Restore default submit behavior
-        form.removeEventListener("submit", () => {});
-        form.submit();
-      }, 250);
-    } finally {
-      if (submitBtn) {
-        submitBtn.disabled = false;
-        submitBtn.textContent = oldText || "Send message";
-      }
-    }
-  });
-}
-
-function isValidEmail(email) {
-  // Simple email validation that works well enough for UX
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email).trim());
-}
-
-/* ===========================
-   Home Articles (accordion)
+   Home articles accordion
    =========================== */
 
 function renderHomeArticles() {
   const wrap = document.getElementById("articlesGrid");
   if (!wrap || !Array.isArray(HOME_ARTICLES)) return;
 
-  wrap.innerHTML = HOME_ARTICLES
-    .map((a) => {
-      const regionId = `article-body-${a.id}`;
-      const btnId = `article-btn-${a.id}`;
+  wrap.innerHTML = HOME_ARTICLES.map((a) => {
+    const regionId = `article-body-${a.id}`;
+    const btnId = `article-btn-${a.id}`;
 
-      return `
+    return `
       <article class="article card" data-article-id="${escapeHtml(a.id)}">
         <button class="article__head" id="${btnId}" type="button"
           aria-expanded="false" aria-controls="${regionId}">
@@ -358,8 +133,7 @@ function renderHomeArticles() {
         </div>
       </article>
     `;
-    })
-    .join("");
+  }).join("");
 
   wrap.querySelectorAll(".article__head").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -371,44 +145,40 @@ function renderHomeArticles() {
 
       const isOpen = btn.getAttribute("aria-expanded") === "true";
 
+      // Accordion: close all
       wrap.querySelectorAll(".article").forEach((c) => {
         const b = c.querySelector(".article__body");
         const h = c.querySelector(".article__head");
         if (b) b.hidden = true;
         if (h) h.setAttribute("aria-expanded", "false");
-        c.classList.remove("article--open");
       });
 
+      // Toggle current
       if (!isOpen) {
         body.hidden = false;
         btn.setAttribute("aria-expanded", "true");
-        card.classList.add("article--open");
         card.scrollIntoView({ behavior: "smooth", block: "start" });
       }
     });
   });
 }
 
-/** Convert plain text with paragraphs into safe HTML (no raw HTML allowed). */
+/** Convert plain text (with paragraphs and bullets) into safe HTML. */
 function formatBodyToHtml(text) {
   const raw = String(text || "");
   const paragraphs = raw.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
 
-  return paragraphs
-    .map((p) => {
-      const lines = p.split("\n").map((l) => l.trim()).filter(Boolean);
-      const bulletLines = lines.filter((l) => l.startsWith("• "));
+  return paragraphs.map((p) => {
+    const lines = p.split("\n").map((l) => l.trim()).filter(Boolean);
+    const bullets = lines.filter((l) => l.startsWith("• "));
 
-      if (bulletLines.length >= 2 && bulletLines.length === lines.length) {
-        const items = bulletLines
-          .map((l) => `<li>${escapeHtml(l.replace(/^•\s+/, ""))}</li>`)
-          .join("");
-        return `<ul class="article__list">${items}</ul>`;
-      }
+    if (bullets.length >= 2 && bullets.length === lines.length) {
+      const items = bullets.map((l) => `<li>${escapeHtml(l.replace(/^•\s+/, ""))}</li>`).join("");
+      return `<ul class="article__list">${items}</ul>`;
+    }
 
-      return `<p>${escapeHtml(p).replaceAll("\n", "<br>")}</p>`;
-    })
-    .join("");
+    return `<p>${escapeHtml(p).replaceAll("\n", "<br>")}</p>`;
+  }).join("");
 }
 
 /* ===========================
@@ -466,14 +236,14 @@ function renderRecipes() {
 
 function renderRecipeCard(r) {
   const dietLabel = r.diet === "vegetarian" ? "Vegetarian" : "Non-Vegetarian";
-  const meatIcon = meatTypeIcon(r.meatType);
+  const meatIcon = r.meatType ? `${meatTypeIcon(r.meatType)} ${cap(r.meatType)}` : "";
 
   return `
     <article class="recipe card" id="recipe-${escapeHtml(r.id)}">
       <div class="recipe__media">
         <img class="recipe__img" src="${escapeHtml(r.image)}" alt="${escapeHtml(r.title)}" loading="lazy">
         <span class="badge badge--left">${dietLabel}</span>
-        ${r.meatType ? `<span class="badge badge--right">${meatIcon} ${escapeHtml(cap(r.meatType))}</span>` : ""}
+        ${r.meatType ? `<span class="badge badge--right">${escapeHtml(meatIcon)}</span>` : ""}
       </div>
 
       <div class="recipe__body">
@@ -484,8 +254,9 @@ function renderRecipeCard(r) {
           <span class="chip">⏱ ${Number(r.minutes) || 0} min</span>
         </div>
 
+        <!-- Buttons: same row, same size (CSS flex:1) -->
         <div class="recipe__actions">
-          <button class="btn btn--ghost recipe__toggle" data-action="toggle" data-id="${escapeHtml(r.id)}" type="button">
+          <button class="btn btn--ghost" data-action="toggle" data-id="${escapeHtml(r.id)}" type="button">
             View Recipe
           </button>
           <button class="btn btn--primary" data-action="add" data-id="${escapeHtml(r.id)}" type="button">
@@ -509,6 +280,8 @@ function toggleRecipeExpand(recipeId) {
   if (!panel) return;
 
   const shouldOpen = panel.hidden;
+
+  // Close others
   document.querySelectorAll(".recipe__expand").forEach((p) => (p.hidden = true));
   panel.hidden = !shouldOpen;
 
@@ -519,18 +292,12 @@ function toggleRecipeExpand(recipeId) {
 
 function meatTypeIcon(meatType) {
   switch (meatType) {
-    case "chicken":
-      return "🍗";
-    case "beef":
-      return "🥩";
-    case "fish":
-      return "🐟";
-    case "pork":
-      return "🐖";
-    case "lamb":
-      return "🐑";
-    default:
-      return "🍽️";
+    case "chicken": return "🍗";
+    case "beef": return "🥩";
+    case "fish": return "🐟";
+    case "pork": return "🐖";
+    case "lamb": return "🐑";
+    default: return "🍽️";
   }
 }
 
@@ -543,14 +310,20 @@ function cap(s) {
    =========================== */
 
 function bindAddToPlanModal() {
-  const dayEl = document.getElementById("planDay");
-  if (dayEl && Array.isArray(DAYS)) {
-    dayEl.innerHTML = DAYS.map((d) => `<option value="${escapeHtml(d)}">${escapeHtml(d)}</option>`).join("");
-  }
-
   const modal = document.getElementById("addToPlanModal");
   const cancelBtn = document.getElementById("cancelAddBtn");
-  if (modal && cancelBtn) cancelBtn.addEventListener("click", () => modal.close());
+  const form = document.getElementById("addToPlanForm");
+
+  if (!modal || !cancelBtn || !form) return;
+
+  // Cancel must close modal
+  cancelBtn.addEventListener("click", () => modal.close());
+
+  // Defensive: if someone presses ESC, close cleanly
+  modal.addEventListener("cancel", (e) => {
+    e.preventDefault();
+    modal.close();
+  });
 }
 
 function openAddToPlanModal(recipeId) {
@@ -566,14 +339,24 @@ function openAddToPlanModal(recipeId) {
 
   subtitle.textContent = `Adding: ${recipe.title}`;
   recipeIdEl.value = recipeId;
+
+  // Default portions = 1
   portionsEl.value = "1";
 
-  if (dayEl.options.length === 0) {
-    dayEl.innerHTML = DAYS.map((d) => `<option value="${escapeHtml(d)}">${escapeHtml(d)}</option>`).join("");
-  }
+  // Populate day options with current planned recipe titles (simple, only 7)
+  dayEl.innerHTML = DAYS.map((day) => {
+    const entry = weeklyPlan[day];
+    if (!entry) return `<option value="${escapeHtml(day)}">${escapeHtml(day)} — (empty)</option>`;
 
+    const plannedRecipe = getRecipeById(entry.recipeId);
+    const plannedTitle = plannedRecipe ? plannedRecipe.title : "Unknown recipe";
+    return `<option value="${escapeHtml(day)}">${escapeHtml(day)} — ${escapeHtml(plannedTitle)}</option>`;
+  }).join("");
+
+  // Save handler
   form.onsubmit = (e) => {
     e.preventDefault();
+
     const day = dayEl.value;
     const portions = Math.max(1, Math.floor(Number(portionsEl.value || 1)));
 
@@ -588,7 +371,7 @@ function openAddToPlanModal(recipeId) {
 }
 
 /* ===========================
-   Weekly Planner Table
+   Weekly Planner table
    =========================== */
 
 function renderPlannerTable() {
@@ -597,59 +380,54 @@ function renderPlannerTable() {
 
   const hasAny = DAYS.some((d) => !!weeklyPlan[d]);
 
-  const rows = DAYS
-    .map((day) => {
-      const entry = weeklyPlan[day];
-
-      if (!entry) {
-        return `
-          <tr>
-            <td class="td">${escapeHtml(day)}</td>
-            <td class="td muted">—</td>
-            <td class="td muted">—</td>
-            <td class="td"><button class="btn btn--ghost btn--small" data-clear="${escapeHtml(day)}" type="button" disabled>Clear</button></td>
-          </tr>
-        `;
-      }
-
-      const recipe = getRecipeById(entry.recipeId);
-      const title = recipe ? recipe.title : "Unknown recipe";
-      const img = recipe?.image
-        ? `
-          <img src="${escapeHtml(recipe.image)}" alt="" loading="lazy"
-            style="width:48px;height:34px;object-fit:cover;border-radius:10px;border:1px solid var(--border);margin-right:10px;flex:0 0 auto;">
-        `
-        : "";
-
+  const rows = DAYS.map((day) => {
+    const entry = weeklyPlan[day];
+    if (!entry) {
       return `
         <tr>
           <td class="td">${escapeHtml(day)}</td>
-          <td class="td">
-            <div style="display:flex;align-items:center;gap:0;">
-              ${img}
-              <a href="#recipes" class="linklike" style="text-decoration:underline;">
-                ${escapeHtml(title)}
-              </a>
-            </div>
-          </td>
-          <td class="td">${escapeHtml(String(entry.portions))}</td>
-          <td class="td"><button class="btn btn--ghost btn--small" data-clear="${escapeHtml(day)}" type="button">Clear</button></td>
+          <td class="td muted">—</td>
+          <td class="td muted">—</td>
+          <td class="td"><button class="btn btn--ghost btn--small" data-clear="${escapeHtml(day)}" type="button" disabled>Clear</button></td>
         </tr>
       `;
-    })
-    .join("");
+    }
+
+    const recipe = getRecipeById(entry.recipeId);
+    const title = recipe ? recipe.title : "Unknown recipe";
+
+    const img = recipe?.image
+      ? `<img class="recipe-mini__img" src="${escapeHtml(recipe.image)}" alt="" loading="lazy">`
+      : "";
+
+    return `
+      <tr>
+        <td class="td">${escapeHtml(day)}</td>
+        <td class="td">
+          <div class="recipe-mini">
+            ${img}
+            <span class="recipe-mini__title">${escapeHtml(title)}</span>
+          </div>
+        </td>
+        <td class="td">${escapeHtml(String(entry.portions))}</td>
+        <td class="td">
+          <button class="btn btn--ghost btn--small" data-clear="${escapeHtml(day)}" type="button">Clear</button>
+        </td>
+      </tr>
+    `;
+  }).join("");
 
   wrap.innerHTML = `
-    <div class="card__header" style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+    <div class="planner-head">
       <div>
-        <h3 style="margin:0 0 4px;">Your week</h3>
+        <h3 style="margin:0 0 4px;font-weight:950;">Your week</h3>
         <p class="muted" style="margin:0;">Saved locally. One recipe per day.</p>
       </div>
       <button id="clearWeekBtn" class="btn btn--ghost btn--small" type="button" ${hasAny ? "" : "disabled"}>Clear week</button>
     </div>
 
-    <div style="overflow:auto;">
-      <table style="width:100%; border-collapse:collapse;">
+    <div class="table-wrap">
+      <table class="table">
         <thead>
           <tr>
             <th class="th">Day</th>
@@ -658,9 +436,7 @@ function renderPlannerTable() {
             <th class="th">Action</th>
           </tr>
         </thead>
-        <tbody>
-          ${rows}
-        </tbody>
+        <tbody>${rows}</tbody>
       </table>
     </div>
   `;
@@ -683,36 +459,10 @@ function renderPlannerTable() {
       renderShoppingList();
     });
   }
-
-  injectTableCellStylesOnce();
-}
-
-function injectTableCellStylesOnce() {
-  if (document.getElementById("fh-table-style")) return;
-
-  const style = document.createElement("style");
-  style.id = "fh-table-style";
-  style.textContent = `
-    .th{
-      text-align:left;
-      padding:10px;
-      border-bottom:1px solid var(--border);
-      font-size:13px;
-      font-weight:800;
-      color: var(--text);
-      white-space: nowrap;
-    }
-    .td{
-      padding:10px;
-      border-bottom:1px solid var(--border);
-      vertical-align: top;
-    }
-  `;
-  document.head.appendChild(style);
 }
 
 /* ===========================
-   Shopping List (UI)
+   Shopping list (table per section)
    =========================== */
 
 function renderShoppingList() {
@@ -722,77 +472,85 @@ function renderShoppingList() {
   const aggregated = buildShoppingListFromPlan(weeklyPlan);
 
   if (aggregated.totalItems === 0) {
-    wrap.innerHTML = `
-      <p class="muted" style="margin:0;">
-        No recipes selected yet. Add recipes to your weekly plan to generate a shopping list.
-      </p>
-    `;
+    wrap.classList.remove("shop");
+    wrap.innerHTML = `<p class="muted" style="margin:0;">No recipes selected yet. Add recipes to your weekly plan to generate a shopping list.</p>`;
     return;
   }
 
-  const sectionHtml = STORE_SECTIONS
+  const sectionsHtml = STORE_SECTIONS
     .filter((section) => aggregated.bySection[section] && aggregated.bySection[section].length > 0)
-    .map((section) => {
-      const items = aggregated.bySection[section];
-
-      const itemsHtml = items
-        .map((it) => {
-          const key = itemKey(section, it.name, it.unit);
-          const checked = !!shoppingChecks[key];
-
-          return `
-            <label style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);">
-              <input type="checkbox" data-shopcheck="${escapeHtml(key)}" ${checked ? "checked" : ""} style="margin-top:3px;">
-              <span style="display:flex;flex-direction:column;gap:2px;">
-                <span style="${checked ? "text-decoration:line-through;opacity:0.6;" : ""}">
-                  <strong>${escapeHtml(it.name)}</strong>
-                  <span class="muted">• ${escapeHtml(formatQty(it.qty, it.unit))}</span>
-                </span>
-              </span>
-            </label>
-          `;
-        })
-        .join("");
-
-      return `
-        <div style="margin-top:12px;">
-          <h4 style="margin:0 0 6px;">${escapeHtml(section)}</h4>
-          <div>${itemsHtml}</div>
-        </div>
-      `;
-    })
+    .map((section) => renderShopSection(section, aggregated.bySection[section]))
     .join("");
 
+  wrap.classList.add("shop");
   wrap.innerHTML = `
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+    <div class="shop__top">
       <p class="muted" style="margin:0;">
         ${aggregated.totalItems} item${aggregated.totalItems === 1 ? "" : "s"} • Scaled by portions
       </p>
       <button id="resetChecksBtn" class="btn btn--ghost btn--small" type="button">Reset checks</button>
     </div>
-    ${sectionHtml}
+    ${sectionsHtml}
   `;
 
+  // Bind checkbox toggles
   wrap.querySelectorAll("[data-shopcheck]").forEach((cb) => {
     cb.addEventListener("change", () => {
       const k = cb.getAttribute("data-shopcheck");
       if (!k) return;
       shoppingChecks[k] = cb.checked;
-      renderShoppingList();
+      saveShoppingChecks();
+      // Update line-through without re-rendering everything
+      const row = cb.closest("tr");
+      if (row) row.classList.toggle("shop-item--done", cb.checked);
     });
   });
 
+  // Reset checks
   const resetBtn = document.getElementById("resetChecksBtn");
   if (resetBtn) {
     resetBtn.addEventListener("click", () => {
-      Object.keys(shoppingChecks).forEach((k) => delete shoppingChecks[k]);
+      shoppingChecks = Object.create(null);
+      saveShoppingChecks();
       renderShoppingList();
     });
   }
 }
 
+function renderShopSection(section, items) {
+  const rows = items.map((it) => {
+    const key = itemKey(section, it.name, it.unit);
+    const checked = !!shoppingChecks[key];
+    return `
+      <tr class="${checked ? "shop-item--done" : ""}">
+        <td>${escapeHtml(it.name)}</td>
+        <td>${escapeHtml(formatQty(it.qty, it.unit))}</td>
+        <td>
+          <input class="shop-check" type="checkbox" data-shopcheck="${escapeHtml(key)}" ${checked ? "checked" : ""}>
+        </td>
+      </tr>
+    `;
+  }).join("");
+
+  return `
+    <div class="shop__section">
+      <h4 class="shop__section-title">${escapeHtml(section)}</h4>
+      <table class="shop-table">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Quantity</th>
+            <th>Bought</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+  `;
+}
+
 /* ===========================
-   Shopping List (Aggregation)
+   Shopping list aggregation
    =========================== */
 
 function buildShoppingListFromPlan(plan) {
@@ -847,7 +605,7 @@ function itemKey(section, name, unit) {
 }
 
 /* ===========================
-   Step 6: PDF generation
+   PDFs (Step 6)
    =========================== */
 
 function bindPdfButtons() {
@@ -895,12 +653,7 @@ async function generatePlanAndRecipesPdf() {
     const entry = weeklyPlan[day];
     if (!entry) return { day, recipeId: null, recipeTitle: "—", portions: "—" };
     const recipe = getRecipeById(entry.recipeId);
-    return {
-      day,
-      recipeId: entry.recipeId,
-      recipeTitle: recipe ? recipe.title : "Unknown recipe",
-      portions: String(entry.portions)
-    };
+    return { day, recipeId: entry.recipeId, recipeTitle: recipe ? recipe.title : "Unknown recipe", portions: String(entry.portions) };
   });
 
   const selectedRecipeIds = Array.from(new Set(planRows.filter((r) => !!r.recipeId).map((r) => r.recipeId)));
@@ -923,9 +676,7 @@ async function generatePlanAndRecipesPdf() {
   const recipeCellLinks = [];
   const tableBody = planRows.map((r) => [r.day, r.recipeTitle, r.portions]);
 
-  if (typeof doc.autoTable !== "function") {
-    throw new Error("jsPDF AutoTable not found. Ensure jspdf-autotable is loaded.");
-  }
+  if (typeof doc.autoTable !== "function") throw new Error("jsPDF AutoTable not found. Ensure jspdf-autotable is loaded.");
 
   doc.autoTable({
     startY: 92,
@@ -979,13 +730,16 @@ async function generatePlanAndRecipesPdf() {
     doc.setFontSize(10);
     doc.setTextColor(90);
     doc.text(
-      `Calories: ${recipe.caloriesPerPortion} kcal/portion   •   Time: ${recipe.minutes} min   •   ${recipe.diet === "vegetarian" ? "Vegetarian" : "Non-Vegetarian"}${recipe.meatType ? ` (${cap(recipe.meatType)})` : ""}`,
+      `Calories: ${recipe.caloriesPerPortion} kcal/portion   •   Time: ${recipe.minutes} min   •   ${
+        recipe.diet === "vegetarian" ? "Vegetarian" : "Non-Vegetarian"
+      }${recipe.meatType ? ` (${cap(recipe.meatType)})` : ""}`,
       margin,
       cursorY + 12
     );
     doc.setTextColor(0);
     cursorY += 26;
 
+    // Recipe image + ingredients beside it if space
     const imgBoxW = 220;
     const imgBoxH = 150;
 
@@ -1013,50 +767,9 @@ async function generatePlanAndRecipesPdf() {
     let textY = cursorY + 28;
     const ingredientsLines = (recipe.ingredients || []).map((i) => `• ${i}`);
     const ingredientsWrapped = wrapLines(doc, ingredientsLines.join("\n"), textW);
-    const ingHeight = ingredientsWrapped.length * 12 + 6;
 
-    if (pageH - cursorY < Math.max(imgBoxH, ingHeight) + 110) {
-      doc.addPage();
-      cursorY = margin;
-      recipeStartPage[recipeId] = doc.internal.getNumberOfPages();
-
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(13);
-      doc.text(recipe.title, margin, cursorY);
-
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(10);
-      doc.setTextColor(90);
-      doc.text(`Calories: ${recipe.caloriesPerPortion} kcal/portion   •   Time: ${recipe.minutes} min`, margin, cursorY + 14);
-      doc.setTextColor(0);
-      cursorY += 30;
-
-      imageAdded = false;
-      try {
-        const dataUrl = await getImageDataUrl(recipe.image, imgCache);
-        if (dataUrl) {
-          doc.addImage(dataUrl, "JPEG", margin, cursorY, imgBoxW, imgBoxH, undefined, "FAST");
-          imageAdded = true;
-        }
-      } catch {
-        imageAdded = false;
-      }
-    }
-
-    const textX2 = margin + (imageAdded ? imgBoxW + 14 : 0);
-    const textW2 = pageW - margin - textX2;
-
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(11);
-    doc.text("Ingredients", textX2, cursorY + 12);
-
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(10);
-
-    textY = cursorY + 28;
-    const ingredientsWrapped2 = wrapLines(doc, ingredientsLines.join("\n"), textW2);
-    ingredientsWrapped2.forEach((line) => {
-      doc.text(line, textX2, textY);
+    ingredientsWrapped.forEach((line) => {
+      doc.text(line, textX, textY);
       textY += 12;
     });
 
@@ -1091,6 +804,7 @@ async function generatePlanAndRecipesPdf() {
     cursorY = afterY + 16;
   }
 
+  // Add clickable links from weekly table cells to recipe pages
   if (recipeCellLinks.length > 0) {
     doc.setPage(1);
     for (const link of recipeCellLinks) {
@@ -1151,7 +865,8 @@ async function generateShoppingListPdf() {
     headStyles: { fillColor: [242, 140, 40], textColor: 255, fontStyle: "bold" },
     columnStyles: { 0: { cellWidth: pageW - margin * 2 - 160 }, 1: { cellWidth: 160 } },
     didParseCell: (data) => {
-      if (data.section === "body" && data.row.raw && Array.isArray(data.row.raw)) {
+      // Hide separator blank rows
+      if (data.section === "body" && Array.isArray(data.row.raw)) {
         const raw = data.row.raw;
         if (raw[0] === "" && raw[1] === "") {
           data.cell.styles.fillColor = [255, 255, 255];
@@ -1162,81 +877,273 @@ async function generateShoppingListPdf() {
     }
   });
 
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(10);
-  doc.setTextColor(90);
-  doc.text("Tip: Quantities are scaled by portions from your weekly plan.", margin, doc.lastAutoTable.finalY + 18);
-  doc.setTextColor(0);
-
   doc.save(`fast-health_shopping-list_${dateStamp()}.pdf`);
 }
 
 /* ===========================
-   Step 7: Share (WhatsApp + Email)
+   Contact form (no backend)
    =========================== */
 
-function bindShareButtons() {
-  const waBtn = document.getElementById("shareWhatsAppBtn");
-  const emBtn = document.getElementById("shareEmailBtn");
+function bindContactCounter() {
+  const messageEl = document.getElementById("message");
+  const countEl = document.getElementById("messageCount");
+  if (!messageEl || !countEl) return;
 
-  if (waBtn) {
-    waBtn.addEventListener("click", () => {
-      const msg = buildShareMessage();
-      const url = `https://wa.me/?text=${encodeURIComponent(msg)}`;
-      window.open(url, "_blank", "noopener,noreferrer");
-    });
-  }
-
-  if (emBtn) {
-    emBtn.addEventListener("click", () => {
-      const subject = "Fast & Health — Weekly Breakfast Plan (PDFs attached)";
-      const body = buildShareMessage();
-      const mailto = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-      window.location.href = mailto;
-    });
-  }
+  const update = () => (countEl.textContent = `${messageEl.value.length} / 1500`);
+  messageEl.addEventListener("input", update);
+  update();
 }
 
-function buildShareMessage() {
-  const siteUrl = getSiteUrl();
-  const summary = buildPlanSummaryText();
+function bindContactForm() {
+  const form = document.getElementById("contactForm");
+  const status = document.getElementById("contactStatus");
+  const submitBtn = document.getElementById("contactSubmitBtn");
+  if (!form || !status || !submitBtn) return;
 
-  return [
-    "Fast & Health — my weekly breakfast plan 🍳",
-    "",
-    "I downloaded the PDFs from the site (weekly plan + recipes, plus shopping list).",
-    "Please see them attached here.",
-    "",
-    summary,
-    "",
-    `Site: ${siteUrl}`
-  ].join("\n");
-}
+  const nameEl = document.getElementById("name");
+  const emailEl = document.getElementById("email");
+  const messageEl = document.getElementById("message");
 
-function getSiteUrl() {
-  const base = `${location.origin}${location.pathname}`;
-  return base.replace(/index\.html$/i, "");
-}
-
-function buildPlanSummaryText() {
-  const hasAny = DAYS.some((d) => !!weeklyPlan[d]);
-  if (!hasAny) return "Plan summary: (No recipes selected yet.)";
-
-  const lines = ["Plan summary:"];
-  for (const day of DAYS) {
-    const entry = weeklyPlan[day];
-    if (!entry) lines.push(`- ${day}: —`);
-    else {
-      const recipe = getRecipeById(entry.recipeId);
-      const title = recipe ? recipe.title : "Unknown recipe";
-      lines.push(`- ${day}: ${title} (${entry.portions} portion${entry.portions === 1 ? "" : "s"})`);
-    }
+  function setStatus(type, text) {
+    status.classList.remove("is-success", "is-error");
+    status.textContent = text;
+    if (type === "success") status.classList.add("is-success");
+    if (type === "error") status.classList.add("is-error");
   }
-  return lines.join("\n");
+
+  function clearStatus() {
+    status.classList.remove("is-success", "is-error");
+    status.textContent = "";
+  }
+
+  form.querySelectorAll("input, textarea").forEach((el) => el.addEventListener("input", clearStatus));
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const name = String(nameEl?.value || "").trim();
+    const email = String(emailEl?.value || "").trim();
+    const msg = String(messageEl?.value || "").trim();
+
+    if (!name) return setStatus("error", "Please enter your name.");
+    if (!email) return setStatus("error", "Please enter your email.");
+    if (!isValidEmail(email)) return setStatus("error", "Please enter a valid email address.");
+    if (!msg) return setStatus("error", "Please write a message.");
+
+    // Simulated success (no backend)
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Sending…";
+
+    setTimeout(() => {
+      form.reset();
+      bindContactCounter();
+      setStatus("success", "Thanks! Your message was sent.");
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Send Message";
+    }, 350);
+  });
+}
+
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email).trim());
 }
 
 /* ===========================
-   Image helpers for PDF
+   LocalStorage: weekly plan
+   =========================== */
+
+function defaultPlan() {
+  const plan = {};
+  DAYS.forEach((d) => (plan[d] = null));
+  return plan;
+}
+
+function loadPlan() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_PLAN);
+    if (!raw) return defaultPlan();
+
+    const parsed = JSON.parse(raw);
+    const plan = defaultPlan();
+
+    DAYS.forEach((day) => {
+      const v = parsed?.[day];
+      if (!v || typeof v !== "object") return;
+
+      const recipeId = String(v.recipeId || "").trim();
+      const portions = Math.max(1, Math.floor(Number(v.portions || 1)));
+
+      if (recipeId && getRecipeById(recipeId)) plan[day] = { recipeId, portions };
+      else plan[day] = null;
+    });
+
+    return plan;
+  } catch {
+    return defaultPlan();
+  }
+}
+
+function savePlan() {
+  try {
+    localStorage.setItem(STORAGE_KEY_PLAN, JSON.stringify(weeklyPlan));
+  } catch {
+    // ignore
+  }
+}
+
+function setDayPlan(day, recipeId, portions) {
+  if (!DAYS.includes(day)) return;
+  const recipe = getRecipeById(recipeId);
+  if (!recipe) return;
+
+  weeklyPlan[day] = { recipeId: recipe.id, portions: Math.max(1, Math.floor(Number(portions || 1))) };
+  savePlan();
+}
+
+function clearDayPlan(day) {
+  if (!DAYS.includes(day)) return;
+  weeklyPlan[day] = null;
+  savePlan();
+}
+
+function clearWeekPlan() {
+  weeklyPlan = defaultPlan();
+  savePlan();
+}
+
+function bindCrossTabPlanSync() {
+  window.addEventListener("storage", (e) => {
+    if (e.key !== STORAGE_KEY_PLAN) return;
+    weeklyPlan = loadPlan();
+    renderPlannerTable();
+    renderShoppingList();
+  });
+}
+
+/* ===========================
+   LocalStorage: shopping checks (saved by default)
+   =========================== */
+
+function loadShoppingChecks() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_SHOPCHECKS);
+    if (!raw) return Object.create(null);
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== "object") return Object.create(null);
+    return parsed;
+  } catch {
+    return Object.create(null);
+  }
+}
+
+function saveShoppingChecks() {
+  try {
+    localStorage.setItem(STORAGE_KEY_SHOPCHECKS, JSON.stringify(shoppingChecks));
+  } catch {
+    // ignore
+  }
+}
+
+/* ===========================
+   Helpers
+   =========================== */
+
+function getRecipeById(id) {
+  return RECIPES.find((r) => r.id === id) || null;
+}
+
+function escapeHtml(str) {
+  return String(str ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function dateStamp() {
+  const d = new Date();
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+/* ===========================
+   Quantity formatting (grocery-friendly)
+   =========================== */
+
+function formatQty(qty, unit) {
+  const u = String(unit || "unit").trim();
+  const num = Number(qty || 0);
+  if (!Number.isFinite(num) || num <= 0) return `1 ${u}`;
+
+  const pretty = prettyNumber(num);
+
+  const pluralizable = new Set(["piece", "pieces", "slice", "slices", "can", "cans", "cup", "cups", "handful", "handfuls", "tbsp", "pinch"]);
+  const lower = u.toLowerCase();
+
+  if (pluralizable.has(lower)) {
+    const base = singularUnit(lower);
+    const outUnit = isEffectivelyOne(num) ? base : pluralUnit(base);
+    return `${pretty} ${outUnit}`;
+  }
+
+  return `${pretty} ${u}`;
+}
+
+function isEffectivelyOne(n) {
+  return Math.abs(n - 1) < 1e-9;
+}
+
+function singularUnit(u) {
+  switch (u) {
+    case "pieces": return "piece";
+    case "slices": return "slice";
+    case "cans": return "can";
+    case "cups": return "cup";
+    case "handfuls": return "handful";
+    default: return u;
+  }
+}
+
+function pluralUnit(u) {
+  switch (u) {
+    case "piece": return "pieces";
+    case "slice": return "slices";
+    case "can": return "cans";
+    case "cup": return "cups";
+    case "handful": return "handfuls";
+    default: return u;
+  }
+}
+
+function prettyNumber(n) {
+  const whole = Math.floor(n);
+  const frac = n - whole;
+
+  const f = fractionString(frac);
+  if (f) return whole === 0 ? f : `${whole} ${f}`;
+
+  return (Math.round(n * 100) / 100).toFixed(2).replace(/\.?0+$/, "");
+}
+
+function fractionString(frac) {
+  const options = [
+    { v: 0.25, s: "1/4" },
+    { v: 0.33, s: "1/3" },
+    { v: 0.5, s: "1/2" },
+    { v: 0.66, s: "2/3" },
+    { v: 0.75, s: "3/4" }
+  ];
+  for (const o of options) {
+    if (Math.abs(frac - o.v) < 0.06) return o.s;
+  }
+  return "";
+}
+
+/* ===========================
+   PDF image helpers
    =========================== */
 
 async function getImageDataUrl(url, cache) {
@@ -1274,188 +1181,4 @@ function wrapLines(doc, text, maxWidth) {
     out.push(...lines);
   }
   return out;
-}
-
-function dateStamp() {
-  const d = new Date();
-  const yyyy = d.getFullYear();
-  const mm = String(d.getMonth() + 1).padStart(2, "0");
-  const dd = String(d.getDate()).padStart(2, "0");
-  return `${yyyy}-${mm}-${dd}`;
-}
-
-/* ===========================
-   Step 5: LocalStorage wiring
-   =========================== */
-
-function defaultPlan() {
-  const plan = {};
-  DAYS.forEach((d) => (plan[d] = null));
-  return plan;
-}
-
-function loadPlan() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return defaultPlan();
-
-    const parsed = JSON.parse(raw);
-    const plan = defaultPlan();
-
-    DAYS.forEach((day) => {
-      const v = parsed?.[day];
-      if (!v || typeof v !== "object") return;
-
-      const recipeId = String(v.recipeId || "").trim();
-      const portions = Math.max(1, Math.floor(Number(v.portions || 1)));
-
-      if (recipeId && getRecipeById(recipeId)) plan[day] = { recipeId, portions };
-      else plan[day] = null;
-    });
-
-    return plan;
-  } catch {
-    return defaultPlan();
-  }
-}
-
-function savePlan() {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(weeklyPlan));
-  } catch {
-    // ignore
-  }
-}
-
-function setDayPlan(day, recipeId, portions) {
-  if (!DAYS.includes(day)) return;
-  const recipe = getRecipeById(recipeId);
-  if (!recipe) return;
-
-  const cleanPortions = Math.max(1, Math.floor(Number(portions || 1)));
-
-  weeklyPlan[day] = { recipeId: recipe.id, portions: cleanPortions }; // overwrite
-  savePlan();
-}
-
-function clearDayPlan(day) {
-  if (!DAYS.includes(day)) return;
-  weeklyPlan[day] = null;
-  savePlan();
-}
-
-function clearWeekPlan() {
-  weeklyPlan = defaultPlan();
-  savePlan();
-}
-
-function getRecipeById(id) {
-  return RECIPES.find((r) => r.id === id) || null;
-}
-
-function bindCrossTabPlanSync() {
-  window.addEventListener("storage", (e) => {
-    if (e.key !== STORAGE_KEY) return;
-    weeklyPlan = loadPlan();
-    renderPlannerTable();
-    renderShoppingList();
-  });
-}
-
-/* ===========================
-   Quantity formatting (grocery-friendly)
-   =========================== */
-
-function formatQty(qty, unit) {
-  const u = String(unit || "unit").trim();
-  const num = Number(qty || 0);
-  if (!Number.isFinite(num) || num <= 0) return `1 ${u}`;
-
-  const pretty = prettyNumber(num);
-
-  const pluralizable = new Set(["piece", "pieces", "slice", "slices", "can", "cans", "cup", "cups", "handful", "handfuls"]);
-  const lower = u.toLowerCase();
-
-  if (pluralizable.has(lower)) {
-    const base = singularUnit(lower);
-    const outUnit = isEffectivelyOne(num) ? base : pluralUnit(base);
-    return `${pretty} ${outUnit}`;
-  }
-
-  return `${pretty} ${u}`;
-}
-
-function isEffectivelyOne(n) {
-  return Math.abs(n - 1) < 1e-9;
-}
-
-function singularUnit(u) {
-  switch (u) {
-    case "pieces":
-      return "piece";
-    case "slices":
-      return "slice";
-    case "cans":
-      return "can";
-    case "cups":
-      return "cup";
-    case "handfuls":
-      return "handful";
-    default:
-      return u;
-  }
-}
-
-function pluralUnit(u) {
-  switch (u) {
-    case "piece":
-      return "pieces";
-    case "slice":
-      return "slices";
-    case "can":
-      return "cans";
-    case "cup":
-      return "cups";
-    case "handful":
-      return "handfuls";
-    default:
-      return u;
-  }
-}
-
-function prettyNumber(n) {
-  const whole = Math.floor(n);
-  const frac = n - whole;
-
-  const f = fractionString(frac);
-  if (f) return whole === 0 ? f : `${whole} ${f}`;
-
-  return (Math.round(n * 100) / 100).toFixed(2).replace(/\.?0+$/, "");
-}
-
-function fractionString(frac) {
-  const options = [
-    { v: 0.25, s: "1/4" },
-    { v: 0.33, s: "1/3" },
-    { v: 0.5, s: "1/2" },
-    { v: 0.66, s: "2/3" },
-    { v: 0.75, s: "3/4" }
-  ];
-  for (const o of options) {
-    if (Math.abs(frac - o.v) < 0.06) return o.s;
-  }
-  return "";
-}
-
-/* ===========================
-   Utilities
-   =========================== */
-
-function escapeHtml(str) {
-  return String(str ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
 }
