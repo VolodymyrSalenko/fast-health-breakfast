@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Fast & Health helps you eat better breakfasts with simple recipes, weekly planning, and a shopping list."
+    />
+    <title>Fast & Health</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Friendly, readable, modern font -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+
+  <body>
+    <!-- Top Navigation -->
+    <header class="topbar">
+      <div class="container topbar__inner">
+        <a class="brand" href="#home" aria-label="Fast & Health Home">
+          Fast <span class="brand__amp">&amp;</span> Health
+        </a>
+
+        <nav class="nav" aria-label="Primary navigation">
+          <a class="nav__link" href="#home">Home</a>
+          <a class="nav__link" href="#recipes">Recipes</a>
+          <a class="nav__link" href="#planner">Weekly Planner</a>
+          <a class="nav__link" href="#contacts">Contacts</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <!-- HOME -->
+      <section id="home" class="section section--hero" aria-label="Home">
+        <div
+          class="hero"
+          role="img"
+          aria-label="Happy family having breakfast in the morning"
+        >
+          <!-- Background image will be set in CSS (assets/hero.jpg later) -->
+          <div class="hero__overlay"></div>
+
+          <div class="container hero__content">
+            <h1 class="hero__title">
+              Healthy breakfasts in <span class="accent">minutes</span>, not
+              excuses.
+            </h1>
+            <p class="hero__subtitle">
+              Fast &amp; Health gives you simple breakfast ideas, explains why
+              they’re good for you, and helps you plan the week so mornings feel
+              easy.
+            </p>
+
+            <div class="hero__cta">
+              <a class="btn btn--primary" href="#recipes">Explore Recipes</a>
+              <a class="btn btn--ghost" href="#planner">Open Weekly Planner</a>
+            </div>
+
+            <div class="hero__badges" aria-label="Highlights">
+              <span class="pill">≤ 20 min recipes</span>
+              <span class="pill">Weekly planning</span>
+              <span class="pill">Auto shopping list</span>
+              <span class="pill">Saved on your device</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="container home-intro">
+          <div class="card">
+            <h2>Why breakfast matters</h2>
+            <p>
+              A balanced breakfast can support steady energy, better focus, and
+              healthier food choices later in the day. It doesn’t need to be
+              complicated — it needs to be consistent.
+            </p>
+            <p>
+              Fast &amp; Health helps you pick quick recipes, plan them across
+              the week, and generate a shopping list so you always have what you
+              need.
+            </p>
+
+            <div class="inline-cta">
+              <a class="btn btn--small btn--primary" href="#recipes"
+                >Go to Recipes</a
+              >
+              <a class="btn btn--small btn--ghost" href="#planner"
+                >Plan This Week</a
+              >
+            </div>
+          </div>
+        </div>
+
+        <div class="container">
+          <div class="section__header">
+            <h2>Learn in 2 minutes</h2>
+            <p class="muted">
+              Tap an article to expand and read. Keep it simple, keep it
+              consistent.
+            </p>
+          </div>
+
+          <!-- Articles will be rendered here by JS -->
+          <div
+            id="articlesGrid"
+            class="grid grid--articles"
+            aria-live="polite"
+          ></div>
+
+          <div class="center">
+            <a class="btn btn--primary" href="#recipes"
+              >See all breakfast recipes</a
+            >
+          </div>
+        </div>
+      </section>
+
+      <!-- RECIPES -->
+      <section id="recipes" class="section" aria-label="Recipes">
+        <div class="container">
+          <div class="section__header">
+            <h2>Recipes</h2>
+            <p class="muted">
+              Quick, affordable breakfasts. Calories shown per portion.
+            </p>
+          </div>
+
+          <!-- Filters -->
+          <div class="filters" role="region" aria-label="Recipe filters">
+            <div class="field">
+              <label for="dietFilter">Diet</label>
+              <select id="dietFilter">
+                <option value="all">All</option>
+                <option value="vegetarian">Vegetarian</option>
+                <option value="non-vegetarian">Non-Vegetarian</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="meatFilter">Meat type</label>
+              <select id="meatFilter">
+                <option value="all">All</option>
+                <option value="chicken">Chicken</option>
+                <option value="beef">Beef</option>
+                <option value="fish">Fish</option>
+                <option value="pork">Pork</option>
+                <option value="lamb">Lamb</option>
+              </select>
+            </div>
+
+            <div class="field field--grow">
+              <label for="searchInput">Search</label>
+              <input
+                id="searchInput"
+                type="search"
+                placeholder="e.g., oats, eggs, yogurt…"
+              />
+            </div>
+          </div>
+
+          <!-- Recipes will be rendered here by JS -->
+          <div
+            id="recipesGrid"
+            class="grid grid--recipes"
+            aria-live="polite"
+          ></div>
+        </div>
+      </section>
+
+      <!-- PLANNER -->
+      <section id="planner" class="section" aria-label="Weekly Planner">
+        <div class="container">
+          <div class="section__header">
+            <h2>Weekly Planner</h2>
+            <p class="muted">
+              One breakfast per day. Your plan is saved locally on this device.
+            </p>
+          </div>
+
+          <!-- Planner table will be rendered here by JS -->
+          <div id="plannerTableWrap" class="card"></div>
+
+          <!-- Shopping list will be rendered here by JS -->
+          <div class="card" style="margin-top: 14px">
+            <div class="card__header">
+              <h3>Shopping list</h3>
+              <p class="muted">
+                Grouped by store sections. Check items off as you shop (not
+                saved).
+              </p>
+            </div>
+            <div id="shoppingListWrap"></div>
+          </div>
+
+          <div class="actions">
+            <button id="downloadPlanPdfBtn" class="btn btn--primary">
+              Download PDF: Plan + Recipes
+            </button>
+            <button id="downloadShopPdfBtn" class="btn btn--ghost">
+              Download PDF: Shopping List
+            </button>
+            <button id="shareWhatsAppBtn" class="btn btn--ghost">
+              Send via WhatsApp
+            </button>
+            <button id="shareEmailBtn" class="btn btn--ghost">
+              Send via Email
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- CONTACTS -->
+      <section id="contacts" class="section" aria-label="Contacts">
+        <div class="container">
+          <div class="section__header">
+            <h2>Contacts</h2>
+            <p class="muted">Questions, feedback, ideas? Send a message.</p>
+          </div>
+
+          <div class="grid grid--contacts">
+            <div class="card">
+              <h3>Contact form</h3>
+
+              <!-- Replace action with your Formspree endpoint later -->
+              <form
+                id="contactForm"
+                class="form"
+                method="POST"
+                action="https://formspree.io/f/REPLACE_ME"
+              >
+                <div class="form__row">
+                  <div class="field field--grow">
+                    <label for="name">Name *</label>
+                    <input id="name" name="name" required />
+                  </div>
+
+                  <div class="field field--grow">
+                    <label for="email">Email *</label>
+                    <input id="email" name="email" type="email" required />
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label for="phone">Phone (optional)</label>
+                  <input id="phone" name="phone" />
+                </div>
+
+                <div class="field">
+                  <label for="message">Message *</label>
+                  <textarea
+                    id="message"
+                    name="message"
+                    maxlength="1500"
+                    required
+                    placeholder="Max 1500 characters"
+                  ></textarea>
+                  <div class="help" id="messageCount">0 / 1500</div>
+                </div>
+
+                <button class="btn btn--primary" type="submit">
+                  Send Message
+                </button>
+                <p class="help">
+                  This uses a form service (no backend). Replace the form action
+                  URL.
+                </p>
+              </form>
+            </div>
+
+            <div class="card">
+              <h3>Social</h3>
+              <p class="muted">These pages are coming soon.</p>
+
+              <div class="social">
+                <button
+                  class="social__btn"
+                  data-social="Facebook"
+                  type="button"
+                  aria-label="Facebook"
+                >
+                  Facebook
+                </button>
+                <button
+                  class="social__btn"
+                  data-social="Instagram"
+                  type="button"
+                  aria-label="Instagram"
+                >
+                  Instagram
+                </button>
+                <button
+                  class="social__btn"
+                  data-social="X"
+                  type="button"
+                  aria-label="X (Twitter)"
+                >
+                  X
+                </button>
+              </div>
+
+              <div class="divider"></div>
+
+              <p class="muted">
+                Tip: add this site to your bookmarks — your weekly plan stays
+                saved on this device.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer" aria-label="Footer">
+      <div class="container footer__inner">
+        <div class="footer__left">
+          <span class="brand brand--small"
+            >Fast <span class="brand__amp">&amp;</span> Health</span
+          >
+          <span class="muted">© <span id="year"></span></span>
+        </div>
+
+        <div class="footer__right">
+          <button class="linklike" data-social="Facebook" type="button">
+            Facebook
+          </button>
+          <button class="linklike" data-social="Instagram" type="button">
+            Instagram
+          </button>
+          <button class="linklike" data-social="X" type="button">X</button>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Simple modal for "under development" -->
+    <dialog id="devModal" class="modal">
+      <div class="modal__inner">
+        <h3>Under development</h3>
+        <p id="devModalText" class="muted">This page is under development.</p>
+        <div class="modal__actions">
+          <button id="closeModalBtn" class="btn btn--primary" type="button">
+            OK
+          </button>
+        </div>
+      </div>
+    </dialog>
+
+    <!-- PDF libs (we’ll use these later in steps 6–7) -->
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.4/dist/jspdf.plugin.autotable.min.js"></script>
+
+    <!-- App -->
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+
+    <!-- Add-to-Plan dialog -->
+    <dialog id="addToPlanModal" class="modal">
+      <div class="modal__inner">
+        <h3 style="margin: 0 0 6px">Add to Weekly Plan</h3>
+        <p class="muted" id="addToPlanSubtitle" style="margin: 0 0 12px">
+          Choose a day and portions.
+        </p>
+
+        <form id="addToPlanForm" class="form" method="dialog">
+          <input type="hidden" id="addToPlanRecipeId" />
+
+          <div class="form__row">
+            <div class="field field--grow">
+              <label for="planDay">Day *</label>
+              <select id="planDay" required></select>
+            </div>
+
+            <div class="field">
+              <label for="planPortions">Portions *</label>
+              <input
+                id="planPortions"
+                type="number"
+                min="1"
+                step="1"
+                value="1"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="modal__actions" style="gap: 10px">
+            <button id="cancelAddBtn" class="btn btn--ghost" type="button">
+              Cancel
+            </button>
+            <button class="btn btn--primary" type="submit">Save</button>
+          </div>
+
+          <p class="help" style="margin-top: 10px">
+            Note: If the day already has a recipe, it will be replaced.
+          </p>
+        </form>
+      </div>
+    </dialog>
+  </body>
+</html>
