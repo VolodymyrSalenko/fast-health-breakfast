@@ -104,64 +104,25 @@ function renderHomeArticles() {
   if (!wrap || !Array.isArray(HOME_ARTICLES)) return;
 
   wrap.innerHTML = HOME_ARTICLES.map((a) => {
-    const regionId = `article-body-${a.id}`;
-    const btnId = `article-btn-${a.id}`;
-
     return `
-      <article class="article card" data-article-id="${escapeHtml(a.id)}">
-        <button class="article__head" id="${btnId}" type="button"
-          aria-expanded="false" aria-controls="${regionId}">
+      <article class="article card">
+        <div class="article__row">
           <div class="article__media">
             <img class="article__img" src="${escapeHtml(a.image)}" alt="${escapeHtml(a.title)}" loading="lazy">
           </div>
 
-          <div class="article__meta">
+          <div class="article__content">
             <h3 class="article__title">${escapeHtml(a.title)}</h3>
-            <p class="article__hint muted">Tap to read • Practical, friendly, fast</p>
-          </div>
-
-          <span class="article__chev" aria-hidden="true">▾</span>
-        </button>
-
-        <div class="article__body" id="${regionId}" hidden>
-          ${formatBodyToHtml(a.body)}
-
-          <div class="article__cta">
-            <a class="btn btn--small btn--primary" href="#recipes">Explore Recipes</a>
-            <a class="btn btn--small btn--ghost" href="#planner">Plan the week</a>
+            <div class="article__body">
+              ${formatBodyToHtml(a.body)}
+            </div>
           </div>
         </div>
       </article>
     `;
   }).join("");
-
-  wrap.querySelectorAll(".article__head").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const card = btn.closest(".article");
-      if (!card) return;
-
-      const body = card.querySelector(".article__body");
-      if (!body) return;
-
-      const isOpen = btn.getAttribute("aria-expanded") === "true";
-
-      // Accordion: close all
-      wrap.querySelectorAll(".article").forEach((c) => {
-        const b = c.querySelector(".article__body");
-        const h = c.querySelector(".article__head");
-        if (b) b.hidden = true;
-        if (h) h.setAttribute("aria-expanded", "false");
-      });
-
-      // Toggle current
-      if (!isOpen) {
-        body.hidden = false;
-        btn.setAttribute("aria-expanded", "true");
-        card.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
-    });
-  });
 }
+
 
 /** Convert plain text (with paragraphs and bullets) into safe HTML. */
 function formatBodyToHtml(text) {
@@ -477,10 +438,33 @@ function renderShoppingList() {
     return;
   }
 
-  const sectionsHtml = STORE_SECTIONS
-    .filter((section) => aggregated.bySection[section] && aggregated.bySection[section].length > 0)
-    .map((section) => renderShopSection(section, aggregated.bySection[section]))
-    .join("");
+  // Build ONE table body with section labels inside the scroll area
+  const bodyRows = [];
+  for (const section of STORE_SECTIONS) {
+    const items = aggregated.bySection[section];
+    if (!items || items.length === 0) continue;
+
+    bodyRows.push(`
+      <tr>
+        <td class="shop-section-label" colspan="3">${escapeHtml(section)}</td>
+      </tr>
+    `);
+
+    for (const it of items) {
+      const key = itemKey(section, it.name, it.unit);
+      const checked = !!shoppingChecks[key];
+
+      bodyRows.push(`
+        <tr class="${checked ? "shop-item--done" : ""}">
+          <td>${escapeHtml(it.name)}</td>
+          <td>${escapeHtml(formatQty(it.qty, it.unit))}</td>
+          <td>
+            <input class="shop-check" type="checkbox" data-shopcheck="${escapeHtml(key)}" ${checked ? "checked" : ""}>
+          </td>
+        </tr>
+      `);
+    }
+  }
 
   wrap.classList.add("shop");
   wrap.innerHTML = `
@@ -490,7 +474,21 @@ function renderShoppingList() {
       </p>
       <button id="resetChecksBtn" class="btn btn--ghost btn--small" type="button">Reset checks</button>
     </div>
-    ${sectionsHtml}
+
+    <div class="shop__scroll">
+      <table class="shop-table">
+        <thead>
+          <tr>
+            <th>ITEM</th>
+            <th>QUANTITY</th>
+            <th>BOUGHT</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${bodyRows.join("")}
+        </tbody>
+      </table>
+    </div>
   `;
 
   // Bind checkbox toggles
@@ -500,7 +498,6 @@ function renderShoppingList() {
       if (!k) return;
       shoppingChecks[k] = cb.checked;
       saveShoppingChecks();
-      // Update line-through without re-rendering everything
       const row = cb.closest("tr");
       if (row) row.classList.toggle("shop-item--done", cb.checked);
     });
@@ -515,38 +512,6 @@ function renderShoppingList() {
       renderShoppingList();
     });
   }
-}
-
-function renderShopSection(section, items) {
-  const rows = items.map((it) => {
-    const key = itemKey(section, it.name, it.unit);
-    const checked = !!shoppingChecks[key];
-    return `
-      <tr class="${checked ? "shop-item--done" : ""}">
-        <td>${escapeHtml(it.name)}</td>
-        <td>${escapeHtml(formatQty(it.qty, it.unit))}</td>
-        <td>
-          <input class="shop-check" type="checkbox" data-shopcheck="${escapeHtml(key)}" ${checked ? "checked" : ""}>
-        </td>
-      </tr>
-    `;
-  }).join("");
-
-  return `
-    <div class="shop__section">
-      <h4 class="shop__section-title">${escapeHtml(section)}</h4>
-      <table class="shop-table">
-        <thead>
-          <tr>
-            <th>Item</th>
-            <th>Quantity</th>
-            <th>Bought</th>
-          </tr>
-        </thead>
-        <tbody>${rows}</tbody>
-      </table>
-    </div>
-  `;
 }
 
 /* ===========================

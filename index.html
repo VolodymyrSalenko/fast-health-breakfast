@@ -33,7 +33,7 @@
     <main>
       <!-- HOME -->
       <section id="home" class="section section--hero">
-        <div class="hero">
+        <div class="hero hero--simple">
           <img
             class="hero__img"
             src="assets/hero/hero.jpg"
@@ -42,67 +42,39 @@
           />
           <div class="hero__overlay" aria-hidden="true"></div>
 
-          <div class="container hero__content">
-            <div class="hero__panel">
-              <h1 class="hero__title">
-                Healthy breakfasts in <span class="accent">minutes</span>,<br />
-                not excuses.
-              </h1>
-              <p class="hero__lead">
-                Fast &amp; Health gives you simple breakfast ideas, explains why
-                they’re good for you, and helps you plan the week so mornings
-                feel easy.
-              </p>
-
-              <div class="hero__cta">
-                <a class="btn btn--primary" href="#recipes">Explore Recipes</a>
-                <a class="btn btn--ghost" href="#planner"
-                  >Open Weekly Planner</a
-                >
-              </div>
-
-              <div class="hero__pills" aria-label="Key features">
-                <span class="pill">≤ 20 min recipes</span>
-                <span class="pill">Weekly planning</span>
-                <span class="pill">Auto shopping list</span>
-                <span class="pill">Saved on your device</span>
-              </div>
-            </div>
+          <div class="container hero__content hero__content--simple">
+            <h1 class="hero__headline">
+              Healthy breakfasts in <span class="accent">minutes</span>, not
+              excuses.
+            </h1>
           </div>
         </div>
 
         <div class="container">
-          <div class="home-card card">
-            <h2 class="home-card__title">Why breakfast matters</h2>
-            <p class="home-card__text">
+          <div class="home-intro card">
+            <h2 class="home-intro__title">
+              Why breakfast matters (and how this site helps)
+            </h2>
+            <p class="home-intro__text">
               A balanced breakfast can support steady energy, better focus, and
-              healthier food choices later in the day. It doesn’t need to be
+              healthier choices later in the day. It doesn’t need to be
               complicated — it needs to be consistent.
             </p>
-            <p class="home-card__text">
-              Fast &amp; Health helps you pick quick recipes, plan them across
-              the week, and generate a shopping list so you always have what you
-              need.
+            <p class="home-intro__text">
+              Fast &amp; Health gives you quick ideas, explains the benefits in
+              plain language, and helps you plan the week so groceries are ready
+              and mornings feel easy.
             </p>
-
-            <div class="home-card__cta">
-              <a class="btn btn--primary btn--small" href="#recipes"
-                >Go to Recipes</a
-              >
-              <a class="btn btn--ghost btn--small" href="#planner"
-                >Plan This Week</a
-              >
-            </div>
           </div>
 
           <div class="section-head">
             <h2 class="section-title">Learn in 2 minutes</h2>
             <p class="section-subtitle">
-              Tap an article to expand. Keep it simple, keep it consistent.
+              Five short reads to make breakfast easier.
             </p>
           </div>
 
-          <div id="articlesGrid" class="articles"></div>
+          <div id="articlesGrid" class="articles articles--stack"></div>
         </div>
       </section>
 
@@ -116,7 +88,7 @@
             </p>
           </div>
 
-          <div class="filters card">
+          <!-- <div class="filters card"> -->
             <div class="filters__field">
               <label class="label" for="dietFilter">Diet</label>
               <select id="dietFilter" class="select">

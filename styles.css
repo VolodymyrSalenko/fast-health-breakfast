@@ -218,7 +218,7 @@ button {
 }
 
 /* ============================
-   Hero
+   Hero (simplified / premium)
    ============================ */
 .hero {
     position: relative;
@@ -226,117 +226,88 @@ button {
     overflow: hidden;
 }
 
-.hero__img {
+.hero--simple .hero__img {
     width: 100%;
-    height: clamp(420px, 50vh, 620px);
+    height: clamp(380px, 48vh, 620px);
     object-fit: cover;
-    /* Keep faces visible on most screens */
-    object-position: 55% 25%;
-    filter: none;
-    /* avoid heavy blur */
+    /* keep faces visible; you can tweak if your hero crop differs */
+    object-position: 55% 24%;
 }
 
 .hero__overlay {
     position: absolute;
     inset: 0;
+    /* subtle gradient to help headline readability without hiding photo */
     background: linear-gradient(to top,
-            rgba(251, 246, 239, .88) 0%,
-            rgba(251, 246, 239, .55) 40%,
-            rgba(251, 246, 239, .15) 70%,
-            rgba(251, 246, 239, 0) 100%);
+            rgba(18, 24, 38, .42) 0%,
+            rgba(18, 24, 38, .18) 28%,
+            rgba(18, 24, 38, 0) 62%);
     pointer-events: none;
 }
 
-.hero__content {
+.hero__content--simple {
     position: absolute;
     inset: 0;
     display: flex;
     align-items: flex-end;
-    padding-bottom: 22px;
+    padding-bottom: clamp(18px, 3vw, 28px);
 }
 
-.hero__panel {
-    width: min(680px, 100%);
-    background: rgba(255, 255, 255, .92);
-    border: 1px solid rgba(18, 24, 38, .10);
-    border-radius: 22px;
-    box-shadow: 0 16px 44px rgba(18, 24, 38, .12);
-    padding: 18px 18px 16px;
-}
-
-.hero__title {
-    margin: 0 0 10px;
-    font-size: clamp(28px, 3vw, 46px);
-    line-height: 1.08;
-    letter-spacing: -1px;
+.hero__headline {
+    margin: 0;
+    color: #fff;
     font-weight: 950;
+    letter-spacing: -1px;
+    line-height: 1.05;
+    font-size: clamp(28px, 3.2vw, 52px);
+    text-shadow: 0 10px 30px rgba(0, 0, 0, .28);
+    /* On desktop: aim for one clean line */
+    white-space: nowrap;
+    max-width: 100%;
 }
 
 .accent {
-    color: var(--accent);
+    color: var(--accent2);
 }
 
-.hero__lead {
-    margin: 0 0 14px;
-    color: rgba(18, 24, 38, .78);
-    font-weight: 600;
-}
-
-.hero__cta {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-
-.hero__pills {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-top: 12px;
-}
-
-.pill {
-    font-size: 12px;
-    font-weight: 800;
-    background: rgba(242, 140, 40, .12);
-    border: 1px solid rgba(242, 140, 40, .22);
-    color: rgba(18, 24, 38, .85);
-    padding: 8px 10px;
-    border-radius: 999px;
-}
-
-/* Home explanatory card */
-.home-card {
-    margin-top: -22px;
+/* Intro card (merged copy) */
+.home-intro {
+    margin-top: -18px;
     position: relative;
+    padding: 20px;
 }
 
-.home-card__title {
+.home-intro__title {
     margin: 0 0 10px;
     font-size: 22px;
     font-weight: 950;
 }
 
-.home-card__text {
+.home-intro__text {
     margin: 0 0 10px;
     color: rgba(18, 24, 38, .86);
     font-weight: 550;
 }
 
-.home-card__cta {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-top: 8px;
+/* Mobile: allow headline wrapping + adjust crop */
+@media (max-width: 720px) {
+    .hero--simple .hero__img {
+        height: 520px;
+        object-position: 50% 18%;
+    }
+
+    .hero__headline {
+        white-space: normal;
+    }
 }
 
 /* ============================
-   Articles (Home accordion)
+   Articles (stacked, full text)
    ============================ */
-.articles {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 14px;
+.articles--stack {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
 .article {
@@ -344,23 +315,17 @@ button {
     overflow: hidden;
 }
 
-.article__head {
-    width: 100%;
-    border: 0;
-    background: transparent;
-    cursor: pointer;
+.article__row {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 14px;
-    text-align: left;
+    gap: 18px;
+    padding: 18px;
+    align-items: flex-start;
 }
 
 .article__media {
-    width: 92px;
-    height: 64px;
-    border-radius: 14px;
+    width: 220px;
+    aspect-ratio: 4 / 3;
+    border-radius: 16px;
     overflow: hidden;
     border: 1px solid rgba(18, 24, 38, .10);
     flex: 0 0 auto;
@@ -373,42 +338,16 @@ button {
     object-position: center;
 }
 
-.article__meta {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
+.article__content {
     min-width: 0;
+    flex: 1 1 auto;
 }
 
 .article__title {
-    margin: 0;
-    font-size: 15px;
-    font-weight: 900;
-    letter-spacing: -.2px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.article__hint {
-    margin: 0;
-    font-size: 12px;
-}
-
-.article__chev {
-    width: 34px;
-    height: 34px;
-    border-radius: 999px;
-    background: rgba(242, 140, 40, .10);
-    border: 1px solid rgba(242, 140, 40, .22);
-    display: grid;
-    place-items: center;
-    font-weight: 900;
-}
-
-.article__body {
-    padding: 0 14px 14px;
-    border-top: 1px solid rgba(18, 24, 38, .08);
+    margin: 0 0 8px;
+    font-size: 18px;
+    font-weight: 950;
+    letter-spacing: -0.3px;
 }
 
 .article__body p {
@@ -421,11 +360,15 @@ button {
     padding-left: 18px;
 }
 
-.article__cta {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-top: 12px;
+@media (max-width: 720px) {
+    .article__row {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .article__media {
+        width: 100%;
+    }
 }
 
 /* ============================
@@ -724,7 +667,33 @@ button {
     text-decoration: line-through;
     opacity: .62;
 }
+/* Shopping list: fixed-height scroll area + sticky header */
+.shop__scroll {
+    max-height: min(62vh, 520px);
+    overflow: auto;
+    border: 1px solid rgba(18, 24, 38, .08);
+    border-radius: 14px;
+    background: #fff;
+}
 
+/* One global sticky header */
+.shop__scroll .shop-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+/* Section labels inside scroll area */
+.shop-section-label {
+    padding: 12px 10px 8px;
+    font-weight: 950;
+    border-top: 1px solid rgba(18, 24, 38, .06);
+    background: #fff;
+}
+
+.shop-section-label:first-child {
+    border-top: 0;
+}
 /* ============================
    Downloads
    ============================ */
